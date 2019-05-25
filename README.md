@@ -3,9 +3,12 @@
 * 添加C++代码网络构建引擎
 * 自定义层更容易，并且容易调试
 * 更友好的Inference结构
+* CUDA 10.0
+* CUDNN 7.5
+* 改造后，更容易实现和TensorRT结合
 
 ## Windows编译
-* 1、请下载[3rd](http://zifuture.com:1000/fs/25.shared/3rd.zip)，依赖的库，解压到README.md同级目录
+* 1、请下载[3rd共555MB](http://zifuture.com:1000/fs/25.shared/3rd.zip)，依赖的库，解压到README.md同级目录
 * 2、安装cuda10
 * 3、使用visual studio 2013打开windows-gpu.sln工程并选择ReleaseDLL编译即可
 
@@ -14,7 +17,7 @@
 * 2、执行make all -j32
 
 ## 编译后文件
-* 在release里面有libcaffe.dll、libcaffe.lib等文件，需要依赖cudnn64_7.dll(cudnn7.5，在[3rd](http://zifuture.com:1000/fs/25.shared/3rd.zip)压缩包中有)
+* 在release里面有libcaffe.dll、libcaffe.lib等文件，需要依赖cudnn64_7.dll(cudnn7.5，在[3rd共555MB](http://zifuture.com:1000/fs/25.shared/3rd.zip)压缩包中有)
 * 头文件是cc_v5.h
 * cc_nb.h和cc_nb.cpp是network build engine文件，独立并依赖于cc_v5.h。可以根据需求修改他
 * 案例在release文件夹里面，有训练和inference例子
