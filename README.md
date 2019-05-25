@@ -4,8 +4,23 @@
 * 自定义层更容易，并且容易调试
 * 更友好的Inference结构
 
+## Windows编译
+* 1、请下载3rd，依赖的库，解压到README.md同级目录
+* 2、安装cuda10
+* 3、使用visual studio 2013打开工程并选择ReleaseDLL编译即可
+
+## Linux编译
+* 1、按照caffe for Linux安装依赖项
+* 2、执行make all -j32
+
+## 编译后文件
+* 在release里面有libcaffe.dll、libcaffe.lib等文件，需要依赖cudnn64_7.dll(cudnn7.5，在3rd压缩包中有)
+* 头文件是cc_v5.h
+* cc_nb.h和cc_nb.cpp是network build engine文件，独立并依赖于cc_v5.h。可以根据需求修改他
+* 案例在release文件夹里面，有训练和inference例子
+
 ## 训练代码
-```
+```C++
     cc::setGPU(0);
     cc::installRegister();
     INSTALL_LAYER(CifarDataLayer);
@@ -51,7 +66,7 @@
 ```
 
 ### 网络构建
-```
+```C++
 cc::Tensor resnet18(const cc::Tensor& input, int numunit){
     auto x = input;
     x = resnet_conv(x, { 3, 3, 16 }, "conv1", 1, true, true);
@@ -71,7 +86,7 @@ cc::Tensor resnet18(const cc::Tensor& input, int numunit){
 ```
 
 ### 自定义层
-```
+```C++
 class LeftPooling : public cc::BaseLayer{
 
 public:
@@ -145,4 +160,27 @@ private:
 ```
 INSTALL_LAYER(LeftPooling);
 path1 = L::custom("LeftPooling", path1, {}, "leftPooling");
+```
+
+### Inference案例
+```C++
+    cc::setGPU(0);
+    auto image = L::input({ 1, 3, 688, 368 }, "image");
+    auto poseNetwork = pose(image, 5);
+    auto net = cc::engine::caffe::buildNet(poseNetwork);
+    //auto net = loadNetFromPrototxt("net.prototxt");
+    
+    net->weightsFromFile("pose_iter_440000.caffemodel");
+
+    Mat im = imread("demo.jpg");
+    Mat show = im.clone();
+    Mat rawShow = show.clone();
+
+    im.convertTo(im, CV_32F, 1 / 256.0, -0.5);
+    net->input_blob(0)->setData(0, im);
+    net->forward();
+
+    float scalex = im.cols / (float)net->input_blob(0)->width();
+    float scaley = im.rows / (float)net->input_blob(0)->height();
+    Blob* keypoints = net->blob("Mconv7_stage6_L2");
 ```
