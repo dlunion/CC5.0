@@ -6,6 +6,8 @@
 * CUDA 10.0
 * CUDNN 7.5
 * 改造后，更容易实现和TensorRT结合
+* 支持Linux、Windows，便于部署和移植
+* 将要支持[Tensorboard](release/tensorboard)
 
 ## Windows编译
 * 1、请下载[3rd共555MB](http://zifuture.com:1000/fs/25.shared/3rd.zip)，依赖的库，解压到README.md同级目录
