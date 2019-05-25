@@ -5,16 +5,16 @@
 * 更友好的Inference结构
 
 ## Windows编译
-* 1、请下载3rd，依赖的库，解压到README.md同级目录
+* 1、请下载[3rd](http://zifuture.com:1000/fs/25.shared/3rd.zip)，依赖的库，解压到README.md同级目录
 * 2、安装cuda10
-* 3、使用visual studio 2013打开工程并选择ReleaseDLL编译即可
+* 3、使用visual studio 2013打开windows-gpu.sln工程并选择ReleaseDLL编译即可
 
 ## Linux编译
 * 1、按照caffe for Linux安装依赖项
 * 2、执行make all -j32
 
 ## 编译后文件
-* 在release里面有libcaffe.dll、libcaffe.lib等文件，需要依赖cudnn64_7.dll(cudnn7.5，在3rd压缩包中有)
+* 在release里面有libcaffe.dll、libcaffe.lib等文件，需要依赖cudnn64_7.dll(cudnn7.5，在[3rd](http://zifuture.com:1000/fs/25.shared/3rd.zip)压缩包中有)
 * 头文件是cc_v5.h
 * cc_nb.h和cc_nb.cpp是network build engine文件，独立并依赖于cc_v5.h。可以根据需求修改他
 * 案例在release文件夹里面，有训练和inference例子
@@ -40,7 +40,6 @@
     cc::engine::caffe::buildGraphToFile(resnet18(L::input({ 1, 3, InputHeight, InputWidth }, "image"), 10), "deploy.prototxt");
     auto op = cc::optimizer::momentumStochasticGradientDescent(cc::learningrate::step(0.1, 0.1, 20*epochIters), 0.9);
     op->test_initialization = false;
-    //op->regularization_type = "L2";
     op->test_interval = epochIters;
     op->test_iter = valDatasetSize / BatchSize;
     op->weight_decay = 0.0002f;
@@ -109,7 +108,6 @@ public:
         vector<float> maxColumn(fh);
         vector<int> maxIndex(fh);
 
-        //从右到左
         for (int n = 0; n < input->num(); ++n){
             for (int c = 0; c < input->channel(); ++c){
                 float* ptr = input->mutable_cpu_data() + input->offset(n, c);
@@ -162,14 +160,14 @@ INSTALL_LAYER(LeftPooling);
 path1 = L::custom("LeftPooling", path1, {}, "leftPooling");
 ```
 
-### Inference案例
+### [Inference案例](release/openpose/openpose.cpp)
 ```C++
     cc::setGPU(0);
     auto image = L::input({ 1, 3, 688, 368 }, "image");
     auto poseNetwork = pose(image, 5);
     auto net = cc::engine::caffe::buildNet(poseNetwork);
     //auto net = loadNetFromPrototxt("net.prototxt");
-    
+
     net->weightsFromFile("pose_iter_440000.caffemodel");
 
     Mat im = imread("demo.jpg");
