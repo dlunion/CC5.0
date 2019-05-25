@@ -1,0 +1,11 @@
+*.rar
+*.zip
+*.sdf
+*.pdb
+*.suo
+*.opensdf
+*.pyd
+*.pyc
+/3rd
+*.caffemodel
+trainCenterNet
