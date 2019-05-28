@@ -103,10 +103,10 @@ namespace cc{
 	//
 	//    计算标准的DNN相关输出shape
 	//
-	int compute_std_dnn_output_shape(int input_dim, int kernel_dim, int strides, int padding, int dilation){
-		int kernel_extent = dilation * (kernel_dim - 1) + 1;
-		return (input_dim + 2 * padding - kernel_extent) / strides + 1;
-	}
+	//int compute_std_dnn_output_shape(int input_dim, int kernel_dim, int strides, int padding, int dilation){
+	//	int kernel_extent = dilation * (kernel_dim - 1) + 1;
+	//	return (input_dim + 2 * padding - kernel_extent) / strides + 1;
+	//}
 
 	//
 	//    获取名称，基于当前上下文中的scope指定名称
@@ -177,20 +177,20 @@ namespace cc{
 		return shared_ptr<OTensor>();
 	}
 
-	string OTensor::shapestr(){
-		string r;
-		char buf[100];
-
-		for (int i = 0; i < shape.size(); ++i){
-			sprintf(buf, "%d", shape[i]);
-
-			if (i == 0)
-				r = buf;
-			else
-				r = r + "," + buf;
-		}
-		return r;
-	}
+	//string OTensor::shapestr(){
+	//	string r;
+	//	char buf[100];
+	//
+	//	for (int i = 0; i < shape.size(); ++i){
+	//		sprintf(buf, "%d", shape[i]);
+	//
+	//		if (i == 0)
+	//			r = buf;
+	//		else
+	//			r = r + "," + buf;
+	//	}
+	//	return r;
+	//}
 
 	string operator+(const char* s1, const string& s2){
 		return string(s1) + s2;
@@ -241,6 +241,9 @@ namespace cc{
 		string uname = name;
 		if (uname.empty()){
 			string caffetypename = caffe_type_name();
+			if (caffetypename == "CPP")
+				caffetypename = ((cc::layers::OCustom*)this)->cpp_type;
+
 			map<std::string, int>& layer_last_name_number_map = OThreadContextSessionImpl::getSession()->layers_last_name_number_map_;
 			uname = f("%s%d", caffetypename.c_str(), ++layer_last_name_number_map[caffetypename.c_str()]);
 		}
@@ -886,7 +889,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-			blob->shape = dims;
 			layer->output[0] = blob;
 			return layer->output[0];
 		}
@@ -897,7 +899,7 @@ namespace cc{
 
 		string OCustom::serial_param(){
 			string result = "cpp_param {\n";
-			if (!cpp_param_str.empty()) result += f("param_str: %s\n", cpp_param_str.c_str());
+			if (!cpp_param_str.empty()) result += f("param_str: \"%s\"\n", cpp_param_str.c_str());
 			result += f("type: \"%s\"\n", cpp_type.c_str());
 			result += "}";
 			return result;
@@ -942,7 +944,6 @@ namespace cc{
 				Tensor blob(new OTensor());
 				blob->name = layer->name + "/" + output[i];
 				blob->owner = layer;
-				blob->shape = { 1, 1, 1, 1 };
 				layer->output[i] = blob;
 			}
 			return layer->output;
@@ -965,7 +966,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name + "/" + output;
 			blob->owner = layer;
-			blob->shape = { 1, 1, 1, 1 };
 			layer->output[0] = blob;
 			return blob;
 		}
@@ -973,7 +973,7 @@ namespace cc{
 		//
 		//    自定义层3
 		//
-		Tensor custom(const string& cpp_type, const Tensor& input, const vector<int>& output_shape, const string& name, const string& param_str){
+		Tensor custom(const string& cpp_type, const Tensor& input, const string& name, const string& param_str){
 
 			OCustom* pdata = new OCustom();
 			pdata->cpp_type = cpp_type;
@@ -987,11 +987,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-
-			if (output_shape.empty())
-				blob->shape = input->shape;
-			else
-				blob->shape = output_shape;
 			layer->output[0] = blob;
 			return blob;
 		}
@@ -1026,9 +1021,8 @@ namespace cc{
 			conv->padding_size.resize(2);
 			conv->dilations = dilations;
 
-#if 0
-			//不能够内部分配，否则出错
-			//我们一般默认卷积的权重初始化方式会是xavier
+
+			//我们一般默认卷积的权重初始化方式会是gaussian
 			conv->kernel_initializer.reset(new Initializer());
 			conv->bias_initializer.reset(new Initializer());
 
@@ -1036,26 +1030,21 @@ namespace cc{
 			conv->kernel_initializer->stdval = 0.01;
 			conv->bias_initializer->type = "constant";
 			conv->bias_initializer->value = 0;
-#endif
+		
 
 			LayerOp layer(conv);
 			layer->name = layer->scope_name_or_next_auto_name(name);
 			layer->output.resize(1);
 			layer->input.resize(1);
 
-#if 0
-			//不能够内部分配，否则出错
-			if (hasmult){
-				layer->kernel_mult.reset(new ParamSpecMult());
-				layer->bias_mult.reset(new ParamSpecMult());
+			layer->kernel_mult.reset(new ParamSpecMult());
+			layer->bias_mult.reset(new ParamSpecMult());
 
-				layer->kernel_mult->decay_mult = 0;
-				layer->kernel_mult->lr_mult = 1;
+			layer->kernel_mult->decay_mult = 0;
+			layer->kernel_mult->lr_mult = 1;
 
-				layer->bias_mult->decay_mult = 0;
-				layer->bias_mult->lr_mult = 2;
-			}
-#endif
+			layer->bias_mult->decay_mult = 0;
+			layer->bias_mult->lr_mult = 2;
 
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
@@ -1063,8 +1052,6 @@ namespace cc{
 
 			//shape:  n, c, h, w
 			//kernel: h, w, output
-			blob->shape[0] = x->shape[0];
-			blob->shape[1] = kernel[2];
 
 			if (padding == "valid"){
 				conv->padding_size[0] = 0;
@@ -1074,9 +1061,6 @@ namespace cc{
 				conv->padding_size[0] = (dilations[0] * (kernel[0] - 1) + 1) / 2;
 				conv->padding_size[1] = (dilations[1] * (kernel[1] - 1) + 1) / 2;
 			}
-
-			blob->shape[2] = compute_std_dnn_output_shape(x->shape[2], kernel[0], strides[0], conv->padding_size[0], dilations[0]);
-			blob->shape[3] = compute_std_dnn_output_shape(x->shape[3], kernel[1], strides[1], conv->padding_size[1], dilations[1]);
 
 			layer->input[0] = x;
 			layer->output[0] = blob;
@@ -1113,7 +1097,6 @@ namespace cc{
 			conv->padding_size.resize(2);
 			conv->dilations = dilations;
 
-#if 0
 			//不能够内部分配，否则出错
 			//我们一般默认卷积的权重初始化方式会是xavier
 			conv->kernel_initializer.reset(new Initializer());
@@ -1123,26 +1106,20 @@ namespace cc{
 			conv->kernel_initializer->stdval = 0.01;
 			conv->bias_initializer->type = "constant";
 			conv->bias_initializer->value = 0;
-#endif
 
 			LayerOp layer(conv);
 			layer->name = layer->scope_name_or_next_auto_name(name);
 			layer->output.resize(1);
 			layer->input.resize(1);
 
-#if 0
-			//不能够内部分配，否则出错
-			if (hasmult){
-				layer->kernel_mult.reset(new ParamSpecMult());
-				layer->bias_mult.reset(new ParamSpecMult());
+			layer->kernel_mult.reset(new ParamSpecMult());
+			layer->bias_mult.reset(new ParamSpecMult());
 
-				layer->kernel_mult->decay_mult = 0;
-				layer->kernel_mult->lr_mult = 1;
+			layer->kernel_mult->decay_mult = 0;
+			layer->kernel_mult->lr_mult = 1;
 
-				layer->bias_mult->decay_mult = 0;
-				layer->bias_mult->lr_mult = 2;
-			}
-#endif
+			layer->bias_mult->decay_mult = 0;
+			layer->bias_mult->lr_mult = 2;
 
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
@@ -1150,8 +1127,6 @@ namespace cc{
 
 			//shape:  n, c, h, w
 			//kernel: h, w, output
-			blob->shape[0] = x->shape[0];
-			blob->shape[1] = kernel[2];
 
 			if (padding == "valid"){
 				conv->padding_size[0] = 0;
@@ -1161,9 +1136,6 @@ namespace cc{
 				conv->padding_size[0] = (dilations[0] * (kernel[0] - 1) + 1) / 2;
 				conv->padding_size[1] = (dilations[1] * (kernel[1] - 1) + 1) / 2;
 			}
-
-			blob->shape[2] = compute_std_dnn_output_shape(x->shape[2], kernel[0], strides[0], conv->padding_size[0], dilations[0]);
-			blob->shape[3] = compute_std_dnn_output_shape(x->shape[3], kernel[1], strides[1], conv->padding_size[1], dilations[1]);
 
 			layer->input[0] = x;
 			layer->output[0] = blob;
@@ -1183,7 +1155,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = inplace ? x->name : layer->name;
 			blob->owner = layer;
-			blob->shape = x->shape;
 
 			layer->input[0] = x;
 			layer->output[0] = blob;
@@ -1203,7 +1174,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-			blob->shape = x->shape;
 
 			layer->input[0] = x;
 			layer->output[0] = blob;
@@ -1223,7 +1193,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-			blob->shape = tensors[0]->shape;
 
 			layer->input = tensors;
 			layer->output[0] = blob;
@@ -1246,19 +1215,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-			blob->shape = x->shape;
-
-			if (!global_pooling){
-				//shape:  n, c, h, w
-				//kernel: h, w, output
-				//这里的shape计算是错误的
-				blob->shape[2] = compute_std_dnn_output_shape(x->shape[2], kernel[0], strides[0], pool->padding_size[0]);
-				blob->shape[3] = compute_std_dnn_output_shape(x->shape[3], kernel[1], strides[1], pool->padding_size[1]);
-			}
-			else{
-				blob->shape[2] = 1;
-				blob->shape[3] = 1;
-			}
 
 			layer->input[0] = x;
 			layer->output[0] = blob;
@@ -1288,18 +1244,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-			blob->shape = x->shape;
-
-			if (!global_pooling){
-				//shape:  n, c, h, w
-				//kernel: h, w, output
-				blob->shape[2] = compute_std_dnn_output_shape(x->shape[2], kernel[0], strides[0], pool->padding_size[0]);
-				blob->shape[3] = compute_std_dnn_output_shape(x->shape[3], kernel[1], strides[1], pool->padding_size[1]);
-			}
-			else{
-				blob->shape[2] = 1;
-				blob->shape[3] = 1;
-			}
 
 			layer->input[0] = x;
 			layer->output[0] = blob;
@@ -1312,22 +1256,21 @@ namespace cc{
 			d->units = units;
 			d->bias_term = bias_term;
 
-#if 0
 			//不能内部构造，否则外边没法修改
 			//我们一般默认卷积的权重初始化方式会是xavier
 			d->weight_initializer.reset(new Initializer());
 			d->bias_initializer.reset(new Initializer());
 
+			d->weight_initializer->stdval = 0.01;
 			d->weight_initializer->type = "gaussian";
 			d->bias_initializer->type = "constant";
-#endif
+			d->bias_initializer->value = 0.0f;
 
 			LayerOp layer(d);
 			layer->name = layer->scope_name_or_next_auto_name(name);
 			layer->output.resize(1);
 			layer->input.resize(1);
 
-#if 0
 			layer->kernel_mult.reset(new ParamSpecMult());
 			layer->bias_mult.reset(new ParamSpecMult());
 
@@ -1336,15 +1279,10 @@ namespace cc{
 
 			layer->bias_mult->decay_mult = 0;
 			layer->bias_mult->lr_mult = 1;
-#endif
 
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-			blob->shape = x->shape;
-			blob->shape[1] = units;
-			blob->shape[2] = 1;
-			blob->shape[3] = 1;
 
 			layer->input[0] = x;
 			layer->output[0] = blob;
@@ -1360,7 +1298,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-			blob->shape = a->shape;
 			layer->input[0] = a;
 			layer->input[1] = b;
 			layer->output[0] = blob;
@@ -1376,7 +1313,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-			blob->shape = a->shape;
 			layer->input[0] = a;
 			layer->input[1] = b;
 			layer->output[0] = blob;
@@ -1392,7 +1328,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = inplace ? x->name : layer->name;
 			blob->owner = layer;
-			blob->shape = x->shape;
 			layer->input[0] = x;
 			layer->output[0] = blob;
 			return blob;
@@ -1407,7 +1342,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = inplace ? x->name : layer->name;
 			blob->owner = layer;
-			blob->shape = x->shape;
 			layer->input[0] = x;
 			layer->output[0] = blob;
 			return blob;
@@ -1422,7 +1356,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = inplace ? x->name : layer->name;
 			blob->owner = layer;
-			blob->shape = x->shape;
 			layer->input[0] = x;
 			layer->output[0] = blob;
 			return blob;
@@ -1439,7 +1372,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = inplace ? x->name : layer->name;
 			blob->owner = layer;
-			blob->shape = x->shape;
 			layer->input[0] = x;
 			layer->output[0] = blob;
 			return blob;
@@ -1456,7 +1388,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-			blob->shape = { 1, 1, 1, 1 };
 			layer->input = { feature_map, rois };
 			layer->output = { blob };
 			return blob;
@@ -1474,7 +1405,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = inplace ? x->name : layer->name;
 			blob->owner = layer;
-			blob->shape = x->shape;
 			layer->input[0] = x;
 			layer->output[0] = blob;
 			return blob;
@@ -1500,7 +1430,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = inplace ? x->name : layer->name;
 			blob->owner = layer;
-			blob->shape = x->shape;
 			layer->input[0] = x;
 			layer->output[0] = blob;
 			return blob;
@@ -1519,7 +1448,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-			blob->shape = x[1]->shape;
 			layer->input = x;
 			layer->output[0] = blob;
 			return blob;
@@ -1731,7 +1659,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-			blob->shape = { 1 };
 			layer->output.push_back(blob);
 			return blob;
 		}
@@ -1754,7 +1681,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-			blob->shape = { 1 };
 			layer->output.push_back(blob);
 			return blob;
 		}
@@ -1776,7 +1702,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-			blob->shape = { 1 };
 			layer->output.push_back(blob);
 			return blob;
 		}
@@ -1800,7 +1725,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-			blob->shape = { 1 };
 			layer->output.push_back(blob);
 			return blob;
 		}
@@ -1837,7 +1761,6 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
-			blob->shape = { 1 };
 			layer->output[0] = blob;
 			return blob;
 		}

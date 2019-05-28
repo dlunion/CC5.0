@@ -294,11 +294,6 @@ namespace cc{
 
 #define Empty	DynamicValue()
 
-	//
-	//    计算标准的DNN相关输出shape
-	//
-	int compute_std_dnn_output_shape(int input_dim, int kernel_dim, int strides = 1, int padding = 0, int dilation = 1);
-	
 	struct OThreadContextSession;
 	typedef void(StepEndCallbackFunctional)(OThreadContextSession* session, int step, float smoothed_loss);
 	typedef void(PreTrainCallbackFunctional)(OThreadContextSession* session);
@@ -364,10 +359,7 @@ namespace cc{
 		string name;
 
 		//format: nchw
-		vector<int> shape;
-
-		OTensor() :shape(4){}
-		string shapestr();
+		//string shapestr();
 
 		static Tensor getTensorFromName(
 			const std::vector<Tensor>& graph, const std::string& name);
@@ -831,7 +823,7 @@ namespace cc{
 		//
 		//    自定义层3
 		//
-		Tensor custom(const string& cpp_type, const Tensor& input, const vector<int>& output_shape = {}, const string& name = "", const string& param_str = "");
+		Tensor custom(const string& cpp_type, const Tensor& input, const string& name = "", const string& param_str = "");
 
 		//
 		//    卷积层的定义
