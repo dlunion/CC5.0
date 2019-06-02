@@ -388,15 +388,14 @@ int main(){
 	saveToFile("solver.prototxt", op->seril());
 	cc::engine::caffe::buildGraphToFile({ loss, test }, "train.prototxt");
 
-	string lastsavedname;
-	float bestAccuracy = 0, bestLoss = 0;
-	int bestIter = 0;
-	string datarootdir = ".";
-
 	//setup test classifier callback
-	registerOnTestClassificationFunction([&](Solver* solver, float testloss, int index, const char* itemname, float accuracy){
+	registerOnTestClassificationFunction([](Solver* solver, float testloss, int index, const char* itemname, float accuracy){
 		if (strcmp(itemname, "accuracy") == 0){
 
+			static string lastsavedname;
+			static float bestAccuracy = 0, bestLoss = 0;
+			static int bestIter = 0;
+			static string datarootdir = ".";
 			if (accuracy >= bestAccuracy){
 				if (!lastsavedname.empty())
 					remove(lastsavedname.c_str());

@@ -711,6 +711,21 @@ namespace cc{
 		};
 
 		//
+		//    Im2Col
+		//
+		struct OIm2Col : public OLayerOp{
+
+			vector<int> kernel;
+			vector<int> strides;
+			vector<int> dilations;
+			vector<int> padding_size;
+			string padding;
+
+			virtual string serial_param();
+			virtual const char* caffe_type_name(){ return "Im2Col"; }
+		};
+
+		//
 		//    卷积层的定义
 		//
 		struct OConv2D : public OLayerOp{
@@ -852,6 +867,8 @@ namespace cc{
 		//    name:     指定卷积层名称
 		//              默认是为空，即自动生成的名称
 		//
+		Tensor im2col(const Tensor& x, const vector<int>& kernel, const string& padding = "same",
+			const vector<int>& strides = { 1, 1 }, const vector<int>& dilations = { 1, 1 }, const string& name = "");
 		Tensor conv2d(const Tensor& x, const vector<int>& kernel, const string& padding = "same",
 			const vector<int>& strides = { 1, 1 }, const vector<int>& dilations = { 1, 1 }, const string& name = "");
 		Tensor deconv2d(const Tensor& x, const vector<int>& kernel, const string& padding = "same",
