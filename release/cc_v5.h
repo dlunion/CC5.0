@@ -298,8 +298,8 @@ namespace cc{
 	typedef void(OnOptimizationStopped)(Solver* solver, bool early, int iters, float smoothed_loss);
 	
 
-	CCAPI void CCCALL registerOnTestClassificationFunction(const std::function<OnTestClassification>& func);
-	CCAPI void CCCALL registerOnOptimizationStopped(const std::function<OnOptimizationStopped>& func);
+	CCAPI void CCCALL registerOnTestClassificationFunction(OnTestClassification func);
+	CCAPI void CCCALL registerOnOptimizationStopped(OnOptimizationStopped func);
 	CCAPI void CCCALL registerLayerFunction(newLayerFunction newlayerFunc);
 	CCAPI void CCCALL registerLayerForwardFunction(customLayerForward forward);
 	CCAPI void CCCALL registerLayerBackwardFunction(customLayerBackward backward);

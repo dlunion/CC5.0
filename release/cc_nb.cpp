@@ -834,6 +834,60 @@ namespace cc{
 			return result;
 		}
 
+		string OIm2Col::serial_param(){
+
+			string result = f(
+				"convolution_param {\n"
+				"num_output: %d\n",
+				kernel[2]);
+
+			//卷积核的定义
+			if (kernel[0] != kernel[1]){
+				result += f(
+					"kernel_size: %d\n"
+					"kernel_size: %d\n"
+					, kernel[0], kernel[1]);
+			}
+			else{
+				result += f("kernel_size: %d\n", kernel[0]);
+			}
+
+			if (padding_size[0] != padding_size[1]){
+				result += f(
+					"pad: %d\n"
+					"pad: %d\n"
+					, padding_size[0], padding_size[1]);
+			}
+			else{
+				if (padding_size[0] != 0)
+					result += f("pad: %d\n", padding_size[0]);
+			}
+
+			if (strides[0] != strides[1]){
+				result += f(
+					"stride: %d\n"
+					"stride: %d\n"
+					, strides[0], strides[1]);
+			}
+			else{
+				if (strides[0] != 1)
+					result += f("stride: %d\n", strides[0]);
+			}
+
+			if (dilations[0] != dilations[1]){
+				result += f(
+					"dilation: %d\n"
+					"dilation: %d\n"
+					, dilations[0], dilations[1]);
+			}
+			else{
+				if (dilations[0] != 1)
+					result += f("dilation: %d\n", dilations[0]);
+			}
+			result += "}";
+			return result;
+		}
+
 		string ODeconv2D::serial_param(){
 
 			string result = f(
@@ -1021,6 +1075,61 @@ namespace cc{
 			Tensor blob(new OTensor());
 			blob->name = layer->name;
 			blob->owner = layer;
+			layer->output[0] = blob;
+			return blob;
+		}
+
+		//
+		//    Im2Col的定义
+		//    x:        tensor
+		//              需要卷积的tensor
+		//
+		//    kernel:   3-d array
+		//              卷积核的大小，这里是2维，指定为height, width, output
+		//
+		//    padding:    "valid"or "same"
+		//              指定padding的实现方式，valid即卷积后尺寸，无padding，same即卷积后尺寸和x一致
+		//
+		//    strides:  2-d array, height, width
+		//              指定步长
+		//
+		//    dilations: 2-d array, height, width
+		//              卷积的膨胀尺寸
+		//
+		//    name:     指定卷积层名称
+		//              默认是为空，即自动生成的名称
+		//
+		Tensor im2col(const Tensor&  x, const vector<int>& kernel, const string& padding,
+			const vector<int>& strides, const vector<int>& dilations, const string& name){
+
+			OIm2Col* conv = new OIm2Col();
+			conv->kernel = kernel;
+			conv->padding = padding;
+			conv->strides = strides;
+			conv->padding_size.resize(2);
+			conv->dilations = dilations;
+
+			LayerOp layer(conv);
+			layer->name = layer->scope_name_or_next_auto_name(name);
+			layer->output.resize(1);
+			layer->input.resize(1);
+
+			Tensor blob(new OTensor());
+			blob->name = layer->name;
+			blob->owner = layer;
+
+			//shape:  n, c, h, w
+			//kernel: h, w, output
+			if (padding == "valid"){
+				conv->padding_size[0] = 0;
+				conv->padding_size[1] = 0;
+			}
+			else if (padding == "same"){
+				conv->padding_size[0] = (dilations[0] * (kernel[0] - 1) + 1) / 2;
+				conv->padding_size[1] = (dilations[1] * (kernel[1] - 1) + 1) / 2;
+			}
+
+			layer->input[0] = x;
 			layer->output[0] = blob;
 			return blob;
 		}

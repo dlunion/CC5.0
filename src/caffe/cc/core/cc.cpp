@@ -147,11 +147,11 @@ namespace cc{
 		g_custom_layers[type].release = release;
 	}
 
-	CCAPI void CCCALL registerOnTestClassificationFunction(const std::function<cc::OnTestClassification>& func){
+	CCAPI void CCCALL registerOnTestClassificationFunction(OnTestClassification func){
 		g_onTestClassification = func;
 	}
 
-	CCAPI void CCCALL registerOnOptimizationStopped(const std::function<cc::OnOptimizationStopped>& func){
+	CCAPI void CCCALL registerOnOptimizationStopped(OnOptimizationStopped func){
 		g_onOptimizationStopped = func;
 	}
 

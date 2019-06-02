@@ -9,3 +9,5 @@
 /3rd
 *.caffemodel
 trainCenterNet
+/release/nettest
+.vs
