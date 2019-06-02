@@ -4,7 +4,6 @@
 #include <cv.h>
 #include <highgui.h>
 #include "cc_nb.h"
-#include <pa_file/pa_file.h>
 
 using namespace cv;
 using namespace cc;
@@ -273,8 +272,13 @@ int main(){
 	//net->input_blob(0)->reshape(1, 3, 688, 368);
 	//net->reshape();
 
+	//这里是生成一个net.prototxt文件，用来查看，实际上我们不需要prototxt文件，因为代码可以生成
+	//pose_deploy_linevec.prototxt是官方原版参照的文件
 	cc::engine::caffe::buildGraphToFile(poseNetwork, "net.prototxt");
+
+	//我们加载模型
 	if (!net->weightsFromFile("pose_iter_440000.caffemodel")){
+
 		//模型异常不崩溃
 		printf("load weights fail.\n");
 	}
@@ -286,7 +290,10 @@ int main(){
 	double tick = getTickCount();
 	im.convertTo(im, CV_32F, 1 / 256.0, -0.5);
 
-	net->input_blob(0)->setData(0, im);
+	//如果是opencv2410，或者是跟libcaffe.dll编译使用同一个opencv版本，则可以直接使用setData(0, im)
+	//否则需要用下面做法
+	//net->input_blob(0)->setData(0, im);
+	net->input_blob(0)->setData(0, im.ptr<float>(0), im.size());
 	net->forward();
 	net->output_blob(0)->mutable_cpu_data();
 	tick = (getTickCount() - tick) / getTickFrequency() * 1000;
