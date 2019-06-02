@@ -84,6 +84,29 @@ bool UpgradeNetAsNeeded(const string& param_file, NetParameter* param) {
   return success;
 }
 
+bool ReadNetParamsFromTextFile(const string& param_file,
+	NetParameter* param) {
+	if (!ReadProtoFromTextFile(param_file, param)){
+		LOG(INFO) << "Failed to parse NetParameter file: " << param_file;
+		return false;
+	}
+
+	UpgradeNetAsNeeded(param_file, param);
+	return true;
+}
+
+bool ReadNetParamsFromTextString(const string& param_string,
+	NetParameter* param) {
+	
+	if (!ReadProtoFromTextString(param_string, param)){
+		LOG(INFO) << "Failed to parse NetParameter file: " << "x";
+		return false;
+	}
+
+	UpgradeNetAsNeeded("x", param);
+	return true;
+}
+
 void ReadNetParamsFromTextFileOrDie(const string& param_file,
                                     NetParameter* param) {
   CHECK(ReadProtoFromTextFile(param_file, param))
@@ -118,6 +141,30 @@ void ReadNetParamsFromBinaryFileOrDie(const string& param_file,
 	//bool isok = ReadProtoFromBinaryFile(param_file, param);
   //if (!isok) throw std::exception("Failed to parse NetParameter");
   UpgradeNetAsNeeded(param_file, param);
+}
+
+bool ReadNetParamsFromData(const void* data, int length,
+	NetParameter* param) {
+	
+	if (!ReadProtoFromData(data, length, param)){
+		LOG(INFO) << "Failed to parse NetParameter from data";
+		return false;
+	}
+
+	UpgradeNetAsNeeded("x", param);
+	return true;
+}
+
+bool ReadNetParamsFromBinaryFile(const string& param_file,
+	NetParameter* param) {
+
+	if (!ReadProtoFromBinaryFile(param_file, param)){
+		LOG(INFO) << "Failed to parse NetParameter file: " << param_file;
+		return false;
+	}
+
+	UpgradeNetAsNeeded(param_file, param);
+	return true;
 }
 
 bool NetNeedsV0ToV1Upgrade(const NetParameter& net_param) {

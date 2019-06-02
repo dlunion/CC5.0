@@ -166,6 +166,7 @@ path1 = L::custom("LeftPooling", path1, {}, "leftPooling");
 ```
 
 ### [Inference案例](release/openpose/openpose.cpp)
+模型下载[pose_iter_440000.caffemodel](http://posefs1.perception.cs.cmu.edu/OpenPose/models/pose/coco/pose_iter_440000.caffemodel)
 ```C++
     cc::setGPU(0);
     auto image = L::input({ 1, 3, 688, 368 }, "image");
@@ -187,3 +188,6 @@ path1 = L::custom("LeftPooling", path1, {}, "leftPooling");
     float scaley = im.rows / (float)net->input_blob(0)->height();
     Blob* keypoints = net->blob("Mconv7_stage6_L2");
 ```
+
+### 引用
+[OpenPose](https://github.com/CMU-Perceptual-Computing-Lab/openpose): Real-time multi-person keypoint detection library for body, face, hands, and foot estimation

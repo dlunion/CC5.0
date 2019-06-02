@@ -274,7 +274,10 @@ int main(){
 	//net->reshape();
 
 	cc::engine::caffe::buildGraphToFile(poseNetwork, "net.prototxt");
-	net->weightsFromFile("pose_iter_440000.caffemodel");
+	if (!net->weightsFromFile("pose_iter_440000.caffemodel")){
+		//模型异常不崩溃
+		printf("load weights fail.\n");
+	}
 
 	Mat im = imread("demo.jpg");
 	Mat show = im.clone();

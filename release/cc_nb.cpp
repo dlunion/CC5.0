@@ -42,6 +42,12 @@ namespace cc{
 		map<std::string, void*> value_store_map_;
 		LayerID next_layer_id_ = 1;
 
+		virtual void clean_auto_name_info(){
+			next_layer_id_ = 1;
+			value_store_map_.clear();
+			layers_last_name_number_map_.clear();
+		}
+
 		virtual cc::Solver* solver(){
 			return solver_;
 		}
@@ -49,7 +55,7 @@ namespace cc{
 		static mutex global_lock_;
 		static map<std::thread::id, std::shared_ptr<OThreadContextSessionImpl>> global_session_pool_;
 
-		static OThreadContextSessionImpl* getSession(){
+		static OThreadContextSessionImpl* this_thread(){
 			std::thread::id tid = std::this_thread::get_id();
 			std::unique_lock<mutex> l(OThreadContextSessionImpl::global_lock_);
 
@@ -96,8 +102,24 @@ namespace cc{
 	mutex OThreadContextSessionImpl::global_lock_;
 	map<std::thread::id, std::shared_ptr<OThreadContextSessionImpl>> OThreadContextSessionImpl::global_session_pool_;
 
-	OThreadContextSession* OThreadContextSession::getSession(){
-		return OThreadContextSessionImpl::getSession();
+	OThreadContextSession* OThreadContextSession::this_thread(){
+		return OThreadContextSessionImpl::this_thread();
+	}
+
+	void* OThreadContextSession::this_thread_get(const char* key){
+		return OThreadContextSessionImpl::this_thread()->get(key);;
+	}
+
+	void OThreadContextSession::this_thread_put(const char* key, void* value){
+		OThreadContextSessionImpl::this_thread()->put(key, value);
+	}
+
+	cc::Solver* OThreadContextSession::this_thread_solver(){
+		return OThreadContextSessionImpl::this_thread()->solver();
+	}
+
+	void OThreadContextSession::this_thread_clean_auto_name_info(){
+		OThreadContextSessionImpl::this_thread()->clean_auto_name_info();
 	}
 
 	//
@@ -113,20 +135,20 @@ namespace cc{
 	//    返回名称以： scope / name 的形式，若scope为空，则返回name
 	//
 	string get_name_with_scope(const string& name){
-		if (OThreadContextSessionImpl::getSession()->namescope_stack_.empty())
+		if (OThreadContextSessionImpl::this_thread()->namescope_stack_.empty())
 			return name;
 
-		return OThreadContextSessionImpl::getSession()->namescope_stack_.top() + "/" + name;
+		return OThreadContextSessionImpl::this_thread()->namescope_stack_.top() + "/" + name;
 	}
 
 	//
 	//    scope的具体实现定义，构造的时候push，析构的时候pop
 	//
 	name_scope::name_scope(const string& name){
-		OThreadContextSessionImpl::getSession()->namescope_stack_.push(get_name_with_scope(name));
+		OThreadContextSessionImpl::this_thread()->namescope_stack_.push(get_name_with_scope(name));
 	}
 	name_scope::~name_scope(){
-		OThreadContextSessionImpl::getSession()->namescope_stack_.pop();
+		OThreadContextSessionImpl::this_thread()->namescope_stack_.pop();
 	}
 
 	string Initializer::seril(){
@@ -234,7 +256,7 @@ namespace cc{
 	}
 	
 	OLayerOp::OLayerOp(){
-		this->layer_id = OThreadContextSession::getSession()->next_layer_id();
+		this->layer_id = OThreadContextSession::this_thread()->next_layer_id();
 	}
 
 	string OLayerOp::scope_name_or_next_auto_name(const string& name){
@@ -244,7 +266,7 @@ namespace cc{
 			if (caffetypename == "CPP")
 				caffetypename = ((cc::layers::OCustom*)this)->cpp_type;
 
-			map<std::string, int>& layer_last_name_number_map = OThreadContextSessionImpl::getSession()->layers_last_name_number_map_;
+			map<std::string, int>& layer_last_name_number_map = OThreadContextSessionImpl::this_thread()->layers_last_name_number_map_;
 			uname = f("%s%d", caffetypename.c_str(), ++layer_last_name_number_map[caffetypename.c_str()]);
 		}
 		return get_name_with_scope(uname);
@@ -512,6 +534,18 @@ namespace cc{
 				}
 
 				string solver_pb = optimizer->seril();
+				if (optimizer->device_ids.size() < 2){
+					if (optimizer->device_ids.empty()){
+
+						//set CPU
+						printf("train use CPU.\n");
+						setGPU(-1);
+					}
+					else{
+						printf("train use GPU: %d\n", optimizer->device_ids[0]);
+						setGPU(optimizer->device_ids[0]);
+					}
+				}
 				std::shared_ptr<cc::Solver> solver = cc::loadSolverFromPrototxtString(solver_pb.c_str(), net_pb.c_str());
 
 				if (!optimizer->reload_weights.empty()){
@@ -519,7 +553,7 @@ namespace cc{
 					solver->net()->weightsFromFile(optimizer->reload_weights.c_str());
 				}
 
-				OThreadContextSessionImpl* session = OThreadContextSessionImpl::getSession();
+				OThreadContextSessionImpl* session = OThreadContextSessionImpl::this_thread();
 				session->net_pb = net_pb;
 				session->solver_pb = solver_pb;
 				session->solver_ = solver.get();
@@ -539,7 +573,7 @@ namespace cc{
 					solver->solve();
 				}
 
-				OThreadContextSessionImpl::getSession()->solver_ = nullptr;
+				OThreadContextSessionImpl::this_thread()->solver_ = nullptr;
 			}
 		};
 	};
