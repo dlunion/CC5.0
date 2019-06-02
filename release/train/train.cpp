@@ -245,6 +245,8 @@ cc::Tensor resnet_conv(const cc::Tensor& input, const vector<int>& kernel, const
 	layer->bias_term = bias_term;
 	layer->kernel_initializer.reset(new cc::Initializer());
 	layer->kernel_initializer->type = "msra";
+	layer->bias_initializer.reset();
+	layer->bias_mult.reset();
 
 	x = L::batch_norm_only(x, "bn_" + name);
 	x = L::scale(x, true, "scale_" + name);
@@ -261,6 +263,8 @@ cc::Tensor resnet_conv_block(const cc::Tensor& input, const vector<int>& kernel,
 	layer->bias_term = bias_term;
 	layer->kernel_initializer.reset(new cc::Initializer());
 	layer->kernel_initializer->type = "msra";
+	layer->bias_initializer.reset();
+	layer->bias_mult.reset();
 
 	x = L::batch_norm_only(x, cc::f("bn%d", innum1) + part1 + cc::f("_branch%d%s", innum2, part2.c_str()));
 	x = L::scale(x, true, cc::f("scale%d", innum1) + part1 + cc::f("_branch%d%s", innum2, part2.c_str()));
@@ -351,7 +355,6 @@ bool saveToFile(const string& path, const string& data){
 
 int main(){
 
-	cc::setGPU(0);
 	cc::installRegister();
 	INSTALL_LAYER(CifarDataLayer);
 
@@ -377,7 +380,7 @@ int main(){
 	op->average_loss = 1;
 	op->max_iter = trainEpochs * epochIters;
 	op->display = 10;
-	op->device_ids = { 0 };
+	op->device_ids = { 0,1 };
 	//op->reload_weights = "saved_iter[26520]_loss[0.340022]_accuracy[0.896635].caffemodel";
 	op->minimize({ loss, test });
 	//op->minimizeFromFile("net.prototxt");

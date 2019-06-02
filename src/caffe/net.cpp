@@ -20,6 +20,24 @@
 
 namespace caffe {
 
+Net<float>* newNetFromParamPrototxtFile(const std::string& prototxt_file, Phase phase){
+	NetParameter param;
+	if (!ReadNetParamsFromTextFile(prototxt_file, &param))
+		return nullptr;
+
+	param.mutable_state()->set_phase(phase);
+	return new Net<float>(param, nullptr);
+}
+
+Net<float>* newNetFromParamPrototxtString(const std::string& prototxt_string, Phase phase){
+	NetParameter param;
+	if (!ReadNetParamsFromTextString(prototxt_string, &param))
+		return nullptr;
+	
+	param.mutable_state()->set_phase(phase);
+	return new Net<float>(param, nullptr);
+}
+
 template <typename Dtype>
 void Net<Dtype>::attachCCNet(){
 	this->ccNet_ = new cc::Net();
@@ -772,8 +790,9 @@ void Net<Dtype>::Reshape() {
 }
 
 template <typename Dtype>
-void Net<Dtype>::CopyTrainedLayersFrom(const NetParameter& param) {
+bool Net<Dtype>::CopyTrainedLayersFrom(const NetParameter& param) {
   int num_source_layers = param.layer_size();
+  bool success = true;
   for (int i = 0; i < num_source_layers; ++i) {
     const LayerParameter& source_layer = param.layer(i);
     const string& source_layer_name = source_layer.name();
@@ -789,8 +808,12 @@ void Net<Dtype>::CopyTrainedLayersFrom(const NetParameter& param) {
     //DLOG(INFO) << "Copying source layer " << source_layer_name;
     vector<shared_ptr<Blob<Dtype> > >& target_blobs =
         layers_[target_layer_id]->blobs();
-    CHECK_EQ(target_blobs.size(), source_layer.blobs_size())
-        << "Incompatible number of blobs for layer " << source_layer_name;
+
+	if (target_blobs.size() != source_layer.blobs_size()){
+		LOG(INFO) << "Incompatible number of blobs for layer " << source_layer_name;
+		success = false;
+	}
+
     for (int j = 0; j < target_blobs.size(); ++j) {
       if (!target_blobs[j]->ShapeEquals(source_layer.blobs(j))) {
         Blob<Dtype> source_blob;
@@ -806,42 +829,44 @@ void Net<Dtype>::CopyTrainedLayersFrom(const NetParameter& param) {
 		    << source_layer_name << "'; shape mismatch.  Source param shape is "
 		    << source_blob.shape_string() << "; target param shape is "
 		    << target_blobs[j]->shape_string() << ".";
+		success = false;
 		continue;
       }
       const bool kReshape = false;
       target_blobs[j]->FromProto(source_layer.blobs(j), kReshape);
     }
   }
+  return success;
 }
 
 template <typename Dtype>
-void Net<Dtype>::CopyTrainedLayersFromData(const void* data, int length) {
+bool Net<Dtype>::CopyTrainedLayersFromData(const void* data, int length) {
 	NetParameter param;
-	ReadNetParamsFromDataOrDie(data, length, &param);
-	CopyTrainedLayersFrom(param);
+	if (!ReadNetParamsFromData(data, length, &param))
+		return false;
+
+	return CopyTrainedLayersFrom(param);
 }
 
 template <typename Dtype>
-void Net<Dtype>::CopyTrainedLayersFrom(const string trained_filename) {
-  if (trained_filename.size() >= 3 &&
-      trained_filename.compare(trained_filename.size() - 3, 3, ".h5") == 0) {
-    CopyTrainedLayersFromHDF5(trained_filename);
-  } else {
-    CopyTrainedLayersFromBinaryProto(trained_filename);
-  }
+bool Net<Dtype>::CopyTrainedLayersFrom(const string trained_filename) {
+	return CopyTrainedLayersFromBinaryProto(trained_filename);
 }
 
 template <typename Dtype>
-void Net<Dtype>::CopyTrainedLayersFromBinaryProto(
+bool Net<Dtype>::CopyTrainedLayersFromBinaryProto(
     const string trained_filename) {
   NetParameter param;
-  ReadNetParamsFromBinaryFileOrDie(trained_filename, &param);
-  CopyTrainedLayersFrom(param);
+  if (!ReadNetParamsFromBinaryFile(trained_filename, &param))
+	  return false;
+  
+  return CopyTrainedLayersFrom(param);
 }
 
 template <typename Dtype>
-void Net<Dtype>::CopyTrainedLayersFromHDF5(const string trained_filename) {
+bool Net<Dtype>::CopyTrainedLayersFromHDF5(const string trained_filename) {
 	LOG(FATAL) << "CopyTrainedLayersFromHDF5 not support hdf5";
+	return false;
 #if 0
   hid_t file_hid = H5Fopen(trained_filename.c_str(), H5F_ACC_RDONLY,
                            H5P_DEFAULT);

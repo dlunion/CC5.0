@@ -308,12 +308,19 @@ namespace cc{
 		virtual void* get(const char* key) = 0;
 		virtual void put(const char* key, void* value) = 0;
 		virtual LayerID next_layer_id() = 0;
+		virtual void clean_auto_name_info() = 0;
 
 		//单例模式获取实例指针
-		static OThreadContextSession* getSession();
+		static OThreadContextSession* this_thread();
 
 		//获取求解器
 		virtual cc::Solver* solver() = 0;
+
+
+		static void* this_thread_get(const char* key);
+		static void this_thread_put(const char* key, void* value);
+		static cc::Solver* this_thread_solver();
+		static void this_thread_clean_auto_name_info();
 	};
 
 	//

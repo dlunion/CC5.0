@@ -100,6 +100,9 @@ namespace cc{
 		void copyFrom(const Blob* other, bool copyDiff = false, bool reshape = false);
 		void copyFrom(const BlobData* other);
 		void copyDiffFrom(const Blob* other);
+		void setData(int numIndex, const uchar* imdataptr, cv::Size imsize, int channels = 3, const Scalar& meanValue = Scalar(), float scale = 1.0f);
+		void setData(int numIndex, const float* imdataptr, cv::Size imsize, int channels = 3, const Scalar& meanValue = Scalar(), float scale = 1.0f);
+		bool setData(int numIndex, const void* imdataptr, int datalength, int color = 1, const Scalar& meanValue = Scalar(), float scale = 1.0f);
 		void setData(int numIndex, const Mat& data, const Scalar& meanValue = Scalar(), float scale = 1.0f);
 		std::shared_ptr<Blob> transpose(int axis0, int axis1, int axis2, int axis3);
 		int offset(const int n, const int c = 0, const int h = 0, const int w = 0) const;
@@ -175,8 +178,8 @@ namespace cc{
 		Blob* blob(int index);
 		void forward(float* loss = 0);
 		void reshape();
-		void weightsFromFile(const char* file);
-		void weightsFromData(const void* data, int length);
+		bool weightsFromFile(const char* file);
+		bool weightsFromData(const void* data, int length);
 		void shareTrainedLayersWith(const Net* other);
 		bool has_blob(const char* name);
 		bool has_layer(const char* name);

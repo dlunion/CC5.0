@@ -197,41 +197,29 @@ namespace cc{
 
 	void Solver::solve(int numGPU, int* gpuid){
 
-		int defaultGPU[] = { 0 };
-		int numDefaultGPU = sizeof(defaultGPU) / sizeof(defaultGPU[0]);
-		if (numGPU <= 1){
-			installActionSignalOperator();
+		installActionSignalOperator();
 
-			//如果是gpu模式，没有提供GPUID，则默认使用0的gpu
-			if (ptr->param().solver_mode() == caffe::SolverParameter_SolverMode_GPU){
-				if (numGPU == 0){
-					numGPU = numDefaultGPU;
-					gpuid = defaultGPU;
-				}
+		if (numGPU < 2){
+
+			if (numGPU > 0){
+				CHECK_EQ(ptr->param().solver_mode(), caffe::SolverParameter_SolverMode_GPU) << "numGPU > 1, must set solver to GPU mode.";
+
+				int currentDevice;
+				CUDA_CHECK(cudaGetDevice(&currentDevice));
+				CHECK_EQ(gpuid[0], currentDevice) << "The device ID has been set by the setGPU before and needs to be consistent";
 			}
 
-			if (numGPU == 1){
-				CHECK_EQ(ptr->param().solver_mode(), caffe::SolverParameter_SolverMode_GPU) << "numGPU == 1, must set solver to GPU mode.";
-
-				int device_id = gpuid[0];
-				LOG(INFO) << "Use GPU with device ID " << device_id;
-				caffe::Caffe::SetDevice(device_id);
-				caffe::Caffe::set_mode(caffe::Caffe::GPU);
-			}
-			else{
-				CHECK_EQ(ptr->param().solver_mode(), caffe::SolverParameter_SolverMode_CPU) << "numGPU == 0, must set solver to CPU mode.";
-
-				//CPU
-				LOG(INFO) << "Use CPU ";
-				caffe::Caffe::set_mode(caffe::Caffe::CPU);
+			for (int i = 0; i < numGPU; ++i){
+				LOG(INFO) << "Use GPU with device ID " << gpuid[i];
 			}
 			ptr->Solve();
 		}
 		else{
 			CHECK_EQ(ptr->param().solver_mode(), caffe::SolverParameter_SolverMode_GPU) << "numGPU > 1, must set solver to GPU mode.";
 
-			for (int i = 0; i < numGPU; ++i)
+			for (int i = 0; i < numGPU; ++i){
 				LOG(INFO) << "Use GPU with device ID " << gpuid[i];
+			}
 
 			boost::shared_ptr<caffe::Solver<float>> solver_nofree(ptr, nofree);
 			caffe::P2PSync<float> sync(solver_nofree, NULL, ptr->param());

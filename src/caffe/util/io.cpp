@@ -89,7 +89,12 @@ namespace caffe {
 
 	bool ReadProtoFromTextFile(const char* filename, Message* proto) {
 		int fd = open(filename, O_RDONLY);
-		CHECK_NE(fd, -1) << "File not found: " << filename;
+		//CHECK_NE(fd, -1) << "File not found: " << filename;
+		if (fd == -1){
+			LOG(INFO) << "File not found: " << filename;
+			return false;
+		}
+
 		FileInputStream* input = new FileInputStream(fd);
 		bool success = google::protobuf::TextFormat::Parse(input, proto);
 		delete input;
@@ -107,7 +112,10 @@ namespace caffe {
 
 	bool ReadProtoFromBinaryFile(const char* filename, Message* proto) {
 		int fd = open(filename, O_RDONLY | O_BINARY);
-		CHECK_NE(fd, -1) << "File not found: " << filename;
+		if (fd == -1){
+			LOG(INFO) << "File not found: " << filename;
+			return false;
+		}
 
 		bool success = false;
 		{
@@ -193,85 +201,6 @@ namespace caffe {
 
 	cv::Mat ReadImageToCVMat(const string& filename) {
 		return ReadImageToCVMat(filename, 0, 0, true);
-	}
-
-	bool ReadImageToMTCNNDatum(const string& filename, const vector<float>& label,
-		const int height, const int width, const bool is_color,
-		const std::string & encoding, MTCNNDatum* datum){
-
-		//label, roi_minx, roi_miny, roi_maxx, roi_maxy, pts
-		bool succ = ReadImageToDatum(filename, { 0 }, height, width, is_color, encoding, datum->mutable_datum());
-		if (succ){
-			datum->clear_rois();
-			for (int i = 0; i < label.size() / 4; ++i){
-				CHECK(i * 4 + 3 < label.size());
-
-				auto rois = datum->add_rois();
-				rois->set_xmin(label[i * 4 + 0]);
-				rois->set_ymin(label[i * 4 + 1]);
-				rois->set_xmax(label[i * 4 + 2]);
-				rois->set_ymax(label[i * 4 + 3]);
-			}
-			auto pts = datum->mutable_pts();
-			pts->Clear();
-			for (int i = 5; i < label.size(); ++i)
-				pts->Add(label[i]);
-		}
-		return succ;
-	}
-
-	bool ReadAnyDataFileToDatum(const string& filename, const vector<float>& label,
-		const int height, const int width, const bool is_color, Datum* datum){
-		//格式约定
-		//head 4字节
-		//dims 3 x int    channels, height, width
-		//data*           float
-		const int head = 0xCCAADD00;
-
-		FILE* f = fopen(filename.c_str(), "rb");
-		if (f == 0){
-			LOG(ERROR) << "Could not open or find file " << filename;
-			return false;
-		}
-
-		int r_head = 0;
-		fread(&r_head, 1, sizeof(r_head), f);
-
-		if (r_head != head){
-			fclose(f);
-			char buf[1000];
-			sprintf(buf, "Invalid anyfile format, file hand missmatch( 0x%X vs. 0x%X ): ", r_head, head);
-			LOG(ERROR) << buf << filename;
-			return false;
-		}
-
-		int dims[3] = { 0 };
-		int readsize = fread(dims, 1, sizeof(dims), f);
-		if (sizeof(dims) != readsize){
-			fclose(f);
-			char buf[1000];
-			sprintf(buf, "Invalid anyfile format, read error( %d vs. %d ): ", readsize, sizeof(dims));
-			LOG(ERROR) << buf << filename;
-			return false;
-		}
-
-		cv::Mat cv_img(dims[1], dims[2], CV_32FC(dims[0]));
-		int r_len = cv_img.size[0] * cv_img.step.p[0];
-		readsize = fread(cv_img.data, 1, r_len, f);
-		if (r_len != readsize){
-			fclose(f);
-			char buf[1000];
-			sprintf(buf, "Invalid anyfile format, read error( %d vs. %d ): ", readsize, r_len);
-			LOG(ERROR) << buf << filename;
-			return false;
-		}
-
-		CVMatFloatToDatum(cv_img, datum);
-		datum->clear_labels();
-		for (int k = 0; k < label.size(); ++k)
-			datum->add_labels(label[k]);
-		fclose(f);
-		return true;
 	}
 
 	// Do the file extension and encoding match?

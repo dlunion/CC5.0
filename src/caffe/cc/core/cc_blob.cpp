@@ -66,6 +66,32 @@ namespace cc{
 		return t;
 	}
 
+	void Blob::setData(int numIndex, const uchar* imdataptr, cv::Size imsize, int channels, const Scalar& meanValue, float scale){
+
+		Mat im(imsize, CV_8UC(channels), (uchar*)imdataptr);
+		setData(numIndex, im, meanValue, scale);
+	}
+
+	void Blob::setData(int numIndex, const float* imdataptr, cv::Size imsize, int channels, const Scalar& meanValue, float scale){
+
+		Mat im(imsize, CV_32FC(channels), (uchar*)imdataptr);
+		setData(numIndex, im, meanValue, scale);
+	}
+
+	bool Blob::setData(int numIndex, const void* imdataptr, int datalength, int color, const Scalar& meanValue, float scale){
+
+		Mat im;
+		try{
+			im = imdecode(Mat(1, datalength, CV_8U, (char*)imdataptr), color);
+		}catch (...){}
+
+		if (im.empty())
+			return false;
+
+		setData(numIndex, im, meanValue, scale);
+		return true;
+	}
+
 	void Blob::setData(int numIndex, const Mat& data, const Scalar& meanValue, float scale){
 		CHECK(!data.empty()) << "data is empty";
 		CHECK_EQ(data.channels(), this->channel()) << "data channel error";

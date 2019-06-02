@@ -149,20 +149,12 @@ namespace caffe {
 			true, datum);
 	}
 
-	bool ReadImageToMTCNNDatum(const string& filename, const vector<float>& label,
-		const int height, const int width, const bool is_color,
-		const std::string & encoding, MTCNNDatum* datum);
-
 	inline bool ReadImageToDatum(const string& filename, const vector<float>& label,
 		const int height, const int width, const bool is_color,
 		const std::string & encoding, Datum* datum) {
 		return ReadImageToDatum(filename, label, height, width, 0, 0, is_color,
 			encoding, datum);
 	}
-
-	//read data by anydata
-	bool ReadAnyDataFileToDatum(const string& filename, const vector<float>& label,
-		const int height, const int width, const bool is_color, Datum* datum);
 
 	inline bool ReadImageToDatum(const string& filename, const vector<float>& label,
 		const int height, const int width, const bool is_color, Datum* datum) {

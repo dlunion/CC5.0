@@ -96,16 +96,16 @@ namespace cc{
 		return ptr->memory_used_;
 	}
 
-	void Net::weightsFromFile(const char* file){
-		ptr->CopyTrainedLayersFrom(file);
+	bool Net::weightsFromFile(const char* file){
+		return ptr->CopyTrainedLayersFrom(file);
 	}
 
 	void Net::shareTrainedLayersWith(const Net* other){
 		ptr->ShareTrainedLayersWith(cvt(other->_native));
 	}
 
-	void Net::weightsFromData(const void* data, int length){
-		ptr->CopyTrainedLayersFromData(data, length);
+	bool Net::weightsFromData(const void* data, int length){
+		return ptr->CopyTrainedLayersFromData(data, length);
 	}
 
 	int Net::num_layers(){
@@ -203,17 +203,34 @@ namespace cc{
 	}
 
 	CCAPI std::shared_ptr<Net> CCCALL loadNetFromPrototxt(const char* net_prototxt, int phase){
-		caffe::Net<float>* net = new caffe::Net<float>(net_prototxt, phase == PhaseTrain ? caffe::Phase::TRAIN : caffe::Phase::TEST);
+
+		if (net_prototxt == nullptr)
+			return std::shared_ptr<Net>();
+
+		caffe::Phase p = phase == PhaseTrain ? caffe::Phase::TRAIN : caffe::Phase::TEST;
+		caffe::Net<float>* net = caffe::newNetFromParamPrototxtFile(net_prototxt, p);
+		if (net == nullptr)
+			return std::shared_ptr<Net>();
+
 		return std::shared_ptr<Net>(net->ccNet(), releaseNet);
 	}
 
 	CCAPI std::shared_ptr<Net> CCCALL loadNetFromPrototxtString(const char* net_prototxt, int length, int phase){
-		caffe::Net<float>* net = new caffe::Net<float>(net_prototxt, length < 1 ? strlen(net_prototxt) : length, phase == PhaseTrain ? caffe::Phase::TRAIN : caffe::Phase::TEST);
-		return std::shared_ptr<Net>(net->ccNet(), releaseNet);
-	}
 
-	CCAPI std::shared_ptr<Net> CCCALL newNetFromParam(const caffe::NetParameter& param){
-		caffe::Net<float>* net = new caffe::Net<float>(param, 0);
+		if (net_prototxt == nullptr)
+			return std::shared_ptr<Net>();
+
+		if (length == -1)
+			length = strlen(net_prototxt);
+
+		if (length < 1)
+			return std::shared_ptr<Net>();
+
+		caffe::Phase p = phase == PhaseTrain ? caffe::Phase::TRAIN : caffe::Phase::TEST;
+		caffe::Net<float>* net = caffe::newNetFromParamPrototxtString(string(net_prototxt, net_prototxt + length), p);
+		if (net == nullptr)
+			return std::shared_ptr<Net>();
+
 		return std::shared_ptr<Net>(net->ccNet(), releaseNet);
 	}
 }

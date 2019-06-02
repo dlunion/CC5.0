@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <memory>
 
 #include "caffe/blob.hpp"
 #include "caffe/common.hpp"
@@ -117,11 +118,11 @@ class Net {
    * @brief For an already initialized net, copies the pre-trained layers from
    *        another Net.
    */
-  void CopyTrainedLayersFrom(const NetParameter& param);
-  void CopyTrainedLayersFromData(const void* data, int length);
-  void CopyTrainedLayersFrom(const string trained_filename);
-  void CopyTrainedLayersFromBinaryProto(const string trained_filename);
-  void CopyTrainedLayersFromHDF5(const string trained_filename);
+  bool CopyTrainedLayersFrom(const NetParameter& param);
+  bool CopyTrainedLayersFromData(const void* data, int length);
+  bool CopyTrainedLayersFrom(const string trained_filename);
+  bool CopyTrainedLayersFromBinaryProto(const string trained_filename);
+  bool CopyTrainedLayersFromHDF5(const string trained_filename);
   /// @brief Writes the net to a proto.
   void ToProto(NetParameter* param, bool write_diff = false) const;
   /// @brief Writes the net to an HDF5 file.
@@ -319,7 +320,8 @@ class Net {
   DISABLE_COPY_AND_ASSIGN(Net);
 };
 
-
+Net<float>* newNetFromParamPrototxtString(const std::string& prototxt_string, Phase phase);
+Net<float>* newNetFromParamPrototxtFile(const std::string& prototxt_file, Phase phase);
 }  // namespace caffe
 
 #endif  // CAFFE_NET_HPP_
