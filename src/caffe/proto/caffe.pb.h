@@ -302,6 +302,9 @@ extern SaltPepperParameterDefaultTypeInternal _SaltPepperParameter_default_insta
 class SampleConstraint;
 class SampleConstraintDefaultTypeInternal;
 extern SampleConstraintDefaultTypeInternal _SampleConstraint_default_instance_;
+class SampleTripletParameter;
+class SampleTripletParameterDefaultTypeInternal;
+extern SampleTripletParameterDefaultTypeInternal _SampleTripletParameter_default_instance_;
 class Sampler;
 class SamplerDefaultTypeInternal;
 extern SamplerDefaultTypeInternal _Sampler_default_instance_;
@@ -347,6 +350,9 @@ extern TransformationParameterDefaultTypeInternal _TransformationParameter_defau
 class TransposeParameter;
 class TransposeParameterDefaultTypeInternal;
 extern TransposeParameterDefaultTypeInternal _TransposeParameter_default_instance_;
+class TripletLossParameter;
+class TripletLossParameterDefaultTypeInternal;
+extern TripletLossParameterDefaultTypeInternal _TripletLossParameter_default_instance_;
 class V0LayerParameter;
 class V0LayerParameterDefaultTypeInternal;
 extern V0LayerParameterDefaultTypeInternal _V0LayerParameter_default_instance_;
@@ -5910,6 +5916,24 @@ class LayerParameter : public ::google::protobuf::Message /* @@protoc_insertion_
   ::caffe::InterpParameter* release_interp_param();
   void set_allocated_interp_param(::caffe::InterpParameter* interp_param);
 
+  // optional .caffe.SampleTripletParameter sample_triplet_param = 167;
+  bool has_sample_triplet_param() const;
+  void clear_sample_triplet_param();
+  static const int kSampleTripletParamFieldNumber = 167;
+  const ::caffe::SampleTripletParameter& sample_triplet_param() const;
+  ::caffe::SampleTripletParameter* mutable_sample_triplet_param();
+  ::caffe::SampleTripletParameter* release_sample_triplet_param();
+  void set_allocated_sample_triplet_param(::caffe::SampleTripletParameter* sample_triplet_param);
+
+  // optional .caffe.TripletLossParameter triplet_loss_param = 168;
+  bool has_triplet_loss_param() const;
+  void clear_triplet_loss_param();
+  static const int kTripletLossParamFieldNumber = 168;
+  const ::caffe::TripletLossParameter& triplet_loss_param() const;
+  ::caffe::TripletLossParameter* mutable_triplet_loss_param();
+  ::caffe::TripletLossParameter* release_triplet_loss_param();
+  void set_allocated_triplet_loss_param(::caffe::TripletLossParameter* triplet_loss_param);
+
   // optional .caffe.AnnotatedDataParameter annotated_data_param = 200;
   bool has_annotated_data_param() const;
   void clear_annotated_data_param();
@@ -6167,6 +6191,10 @@ class LayerParameter : public ::google::protobuf::Message /* @@protoc_insertion_
   void clear_has_dense_crf_param();
   void set_has_interp_param();
   void clear_has_interp_param();
+  void set_has_sample_triplet_param();
+  void clear_has_sample_triplet_param();
+  void set_has_triplet_loss_param();
+  void clear_has_triplet_loss_param();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<3> _has_bits_;
@@ -6247,6 +6275,8 @@ class LayerParameter : public ::google::protobuf::Message /* @@protoc_insertion_
   ::caffe::ROIPoolingParameter* roi_pooling_param_;
   ::caffe::DenseCRFParameter* dense_crf_param_;
   ::caffe::InterpParameter* interp_param_;
+  ::caffe::SampleTripletParameter* sample_triplet_param_;
+  ::caffe::TripletLossParameter* triplet_loss_param_;
   ::caffe::AnnotatedDataParameter* annotated_data_param_;
   ::caffe::MultiBoxLossParameter* multibox_loss_param_;
   ::caffe::PermuteParameter* permute_param_;
@@ -6258,6 +6288,220 @@ class LayerParameter : public ::google::protobuf::Message /* @@protoc_insertion_
   ::caffe::PredictBoxParameter* predict_box_param_;
   ::caffe::FlipParameter* flip_param_;
   int phase_;
+  friend struct protobuf_caffe_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class TripletLossParameter : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:caffe.TripletLossParameter) */ {
+ public:
+  TripletLossParameter();
+  virtual ~TripletLossParameter();
+
+  TripletLossParameter(const TripletLossParameter& from);
+
+  inline TripletLossParameter& operator=(const TripletLossParameter& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const TripletLossParameter& default_instance();
+
+  static inline const TripletLossParameter* internal_default_instance() {
+    return reinterpret_cast<const TripletLossParameter*>(
+               &_TripletLossParameter_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    25;
+
+  void Swap(TripletLossParameter* other);
+
+  // implements Message ----------------------------------------------
+
+  inline TripletLossParameter* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  TripletLossParameter* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const TripletLossParameter& from);
+  void MergeFrom(const TripletLossParameter& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(TripletLossParameter* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional float margin = 1 [default = 0.1];
+  bool has_margin() const;
+  void clear_margin();
+  static const int kMarginFieldNumber = 1;
+  float margin() const;
+  void set_margin(float value);
+
+  // optional float eps = 2 [default = 1e-005];
+  bool has_eps() const;
+  void clear_eps();
+  static const int kEpsFieldNumber = 2;
+  float eps() const;
+  void set_eps(float value);
+
+  // @@protoc_insertion_point(class_scope:caffe.TripletLossParameter)
+ private:
+  void set_has_margin();
+  void clear_has_margin();
+  void set_has_eps();
+  void clear_has_eps();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  float margin_;
+  float eps_;
+  friend struct protobuf_caffe_2eproto::TableStruct;
+};
+// -------------------------------------------------------------------
+
+class SampleTripletParameter : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:caffe.SampleTripletParameter) */ {
+ public:
+  SampleTripletParameter();
+  virtual ~SampleTripletParameter();
+
+  SampleTripletParameter(const SampleTripletParameter& from);
+
+  inline SampleTripletParameter& operator=(const SampleTripletParameter& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _internal_metadata_.unknown_fields();
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return _internal_metadata_.mutable_unknown_fields();
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const SampleTripletParameter& default_instance();
+
+  static inline const SampleTripletParameter* internal_default_instance() {
+    return reinterpret_cast<const SampleTripletParameter*>(
+               &_SampleTripletParameter_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    26;
+
+  void Swap(SampleTripletParameter* other);
+
+  // implements Message ----------------------------------------------
+
+  inline SampleTripletParameter* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  SampleTripletParameter* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const SampleTripletParameter& from);
+  void MergeFrom(const SampleTripletParameter& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(SampleTripletParameter* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // optional uint32 label_num = 1;
+  bool has_label_num() const;
+  void clear_label_num();
+  static const int kLabelNumFieldNumber = 1;
+  ::google::protobuf::uint32 label_num() const;
+  void set_label_num(::google::protobuf::uint32 value);
+
+  // optional uint32 sample_num = 2;
+  bool has_sample_num() const;
+  void clear_sample_num();
+  static const int kSampleNumFieldNumber = 2;
+  ::google::protobuf::uint32 sample_num() const;
+  void set_sample_num(::google::protobuf::uint32 value);
+
+  // optional float eps = 3 [default = 1e-005];
+  bool has_eps() const;
+  void clear_eps();
+  static const int kEpsFieldNumber = 3;
+  float eps() const;
+  void set_eps(float value);
+
+  // @@protoc_insertion_point(class_scope:caffe.SampleTripletParameter)
+ private:
+  void set_has_label_num();
+  void clear_has_label_num();
+  void set_has_sample_num();
+  void clear_has_sample_num();
+  void set_has_eps();
+  void clear_has_eps();
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::HasBits<1> _has_bits_;
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 label_num_;
+  ::google::protobuf::uint32 sample_num_;
+  float eps_;
   friend struct protobuf_caffe_2eproto::TableStruct;
 };
 // -------------------------------------------------------------------
@@ -6290,7 +6534,7 @@ class InterpParameter : public ::google::protobuf::Message /* @@protoc_insertion
                &_InterpParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    25;
+    27;
 
   void Swap(InterpParameter* other);
 
@@ -6432,7 +6676,7 @@ class DenseCRFParameter : public ::google::protobuf::Message /* @@protoc_inserti
                &_DenseCRFParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    26;
+    28;
 
   void Swap(DenseCRFParameter* other);
 
@@ -6599,7 +6843,7 @@ class ROIPoolingParameter : public ::google::protobuf::Message /* @@protoc_inser
                &_ROIPoolingParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    27;
+    29;
 
   void Swap(ROIPoolingParameter* other);
 
@@ -6711,7 +6955,7 @@ class SmoothL1LossParameter : public ::google::protobuf::Message /* @@protoc_ins
                &_SmoothL1LossParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    28;
+    30;
 
   void Swap(SmoothL1LossParameter* other);
 
@@ -6803,7 +7047,7 @@ class MTCNNDataParameter : public ::google::protobuf::Message /* @@protoc_insert
                &_MTCNNDataParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    29;
+    31;
 
   void Swap(MTCNNDataParameter* other);
 
@@ -6975,7 +7219,7 @@ class FlipParameter : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_FlipParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    30;
+    32;
 
   void Swap(FlipParameter* other);
 
@@ -7077,7 +7321,7 @@ class TransformationParameter : public ::google::protobuf::Message /* @@protoc_i
                &_TransformationParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    31;
+    33;
 
   void Swap(TransformationParameter* other);
 
@@ -7320,7 +7564,7 @@ class ResizeParameter : public ::google::protobuf::Message /* @@protoc_insertion
                &_ResizeParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    32;
+    34;
 
   void Swap(ResizeParameter* other);
 
@@ -7584,7 +7828,7 @@ class SaltPepperParameter : public ::google::protobuf::Message /* @@protoc_inser
                &_SaltPepperParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    33;
+    35;
 
   void Swap(SaltPepperParameter* other);
 
@@ -7689,7 +7933,7 @@ class NoiseParameter : public ::google::protobuf::Message /* @@protoc_insertion_
                &_NoiseParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    34;
+    36;
 
   void Swap(NoiseParameter* other);
 
@@ -7903,7 +8147,7 @@ class DistortionParameter : public ::google::protobuf::Message /* @@protoc_inser
                &_DistortionParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    35;
+    37;
 
   void Swap(DistortionParameter* other);
 
@@ -8095,7 +8339,7 @@ class ExpansionParameter : public ::google::protobuf::Message /* @@protoc_insert
                &_ExpansionParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    36;
+    38;
 
   void Swap(ExpansionParameter* other);
 
@@ -8197,7 +8441,7 @@ class LossParameter : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_LossParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    37;
+    39;
 
   void Swap(LossParameter* other);
 
@@ -8339,7 +8583,7 @@ class AccuracyParameter : public ::google::protobuf::Message /* @@protoc_inserti
                &_AccuracyParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    38;
+    40;
 
   void Swap(AccuracyParameter* other);
 
@@ -8451,7 +8695,7 @@ class AnnotatedDataParameter : public ::google::protobuf::Message /* @@protoc_in
                &_AnnotatedDataParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    39;
+    41;
 
   void Swap(AnnotatedDataParameter* other);
 
@@ -8574,7 +8818,7 @@ class ArgMaxParameter : public ::google::protobuf::Message /* @@protoc_insertion
                &_ArgMaxParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    40;
+    42;
 
   void Swap(ArgMaxParameter* other);
 
@@ -8686,7 +8930,7 @@ class ConcatParameter : public ::google::protobuf::Message /* @@protoc_insertion
                &_ConcatParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    41;
+    43;
 
   void Swap(ConcatParameter* other);
 
@@ -8788,7 +9032,7 @@ class BatchNormParameter : public ::google::protobuf::Message /* @@protoc_insert
                &_BatchNormParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    42;
+    44;
 
   void Swap(BatchNormParameter* other);
 
@@ -8900,7 +9144,7 @@ class BiasParameter : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_BiasParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    43;
+    45;
 
   void Swap(BiasParameter* other);
 
@@ -9014,7 +9258,7 @@ class ContrastiveLossParameter : public ::google::protobuf::Message /* @@protoc_
                &_ContrastiveLossParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    44;
+    46;
 
   void Swap(ContrastiveLossParameter* other);
 
@@ -9116,7 +9360,7 @@ class ConvolutionParameter : public ::google::protobuf::Message /* @@protoc_inse
                &_ConvolutionParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    45;
+    47;
 
   void Swap(ConvolutionParameter* other);
 
@@ -9422,7 +9666,7 @@ class CropParameter : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_CropParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    46;
+    48;
 
   void Swap(CropParameter* other);
 
@@ -9527,7 +9771,7 @@ class DataParameter : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_DataParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    47;
+    49;
 
   void Swap(DataParameter* other);
 
@@ -9761,7 +10005,7 @@ class DetectionEvaluateParameter : public ::google::protobuf::Message /* @@proto
                &_DetectionEvaluateParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    48;
+    50;
 
   void Swap(DetectionEvaluateParameter* other);
 
@@ -9913,7 +10157,7 @@ class NonMaximumSuppressionParameter : public ::google::protobuf::Message /* @@p
                &_NonMaximumSuppressionParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    49;
+    51;
 
   void Swap(NonMaximumSuppressionParameter* other);
 
@@ -10025,7 +10269,7 @@ class SaveOutputParameter : public ::google::protobuf::Message /* @@protoc_inser
                &_SaveOutputParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    50;
+    52;
 
   void Swap(SaveOutputParameter* other);
 
@@ -10219,7 +10463,7 @@ class DetectionOutputParameter : public ::google::protobuf::Message /* @@protoc_
                &_DetectionOutputParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    51;
+    53;
 
   void Swap(DetectionOutputParameter* other);
 
@@ -10443,7 +10687,7 @@ class DropoutParameter : public ::google::protobuf::Message /* @@protoc_insertio
                &_DropoutParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    52;
+    54;
 
   void Swap(DropoutParameter* other);
 
@@ -10535,7 +10779,7 @@ class DummyDataParameter : public ::google::protobuf::Message /* @@protoc_insert
                &_DummyDataParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    53;
+    55;
 
   void Swap(DummyDataParameter* other);
 
@@ -10695,7 +10939,7 @@ class EltwiseParameter : public ::google::protobuf::Message /* @@protoc_insertio
                &_EltwiseParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    54;
+    56;
 
   void Swap(EltwiseParameter* other);
 
@@ -10838,7 +11082,7 @@ class ELUParameter : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_ELUParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    55;
+    57;
 
   void Swap(ELUParameter* other);
 
@@ -10930,7 +11174,7 @@ class EmbedParameter : public ::google::protobuf::Message /* @@protoc_insertion_
                &_EmbedParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    56;
+    58;
 
   void Swap(EmbedParameter* other);
 
@@ -11066,7 +11310,7 @@ class ExpParameter : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_ExpParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    57;
+    59;
 
   void Swap(ExpParameter* other);
 
@@ -11178,7 +11422,7 @@ class FlattenParameter : public ::google::protobuf::Message /* @@protoc_insertio
                &_FlattenParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    58;
+    60;
 
   void Swap(FlattenParameter* other);
 
@@ -11280,7 +11524,7 @@ class HDF5DataParameter : public ::google::protobuf::Message /* @@protoc_inserti
                &_HDF5DataParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    59;
+    61;
 
   void Swap(HDF5DataParameter* other);
 
@@ -11400,7 +11644,7 @@ class HDF5OutputParameter : public ::google::protobuf::Message /* @@protoc_inser
                &_HDF5OutputParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    60;
+    62;
 
   void Swap(HDF5OutputParameter* other);
 
@@ -11500,7 +11744,7 @@ class HingeLossParameter : public ::google::protobuf::Message /* @@protoc_insert
                &_HingeLossParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    61;
+    63;
 
   void Swap(HingeLossParameter* other);
 
@@ -11618,7 +11862,7 @@ class SSDDataParameter : public ::google::protobuf::Message /* @@protoc_insertio
                &_SSDDataParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    62;
+    64;
 
   void Swap(SSDDataParameter* other);
 
@@ -11870,7 +12114,7 @@ class ImageDataParameter : public ::google::protobuf::Message /* @@protoc_insert
                &_ImageDataParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    63;
+    65;
 
   void Swap(ImageDataParameter* other);
 
@@ -12096,7 +12340,7 @@ class InfogainLossParameter : public ::google::protobuf::Message /* @@protoc_ins
                &_InfogainLossParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    64;
+    66;
 
   void Swap(InfogainLossParameter* other);
 
@@ -12206,7 +12450,7 @@ class InnerProductParameter : public ::google::protobuf::Message /* @@protoc_ins
                &_InnerProductParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    65;
+    67;
 
   void Swap(InnerProductParameter* other);
 
@@ -12352,7 +12596,7 @@ class InputParameter : public ::google::protobuf::Message /* @@protoc_insertion_
                &_InputParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    66;
+    68;
 
   void Swap(InputParameter* other);
 
@@ -12447,7 +12691,7 @@ class LogParameter : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_LogParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    67;
+    69;
 
   void Swap(LogParameter* other);
 
@@ -12559,7 +12803,7 @@ class LRNParameter : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_LRNParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    68;
+    70;
 
   void Swap(LRNParameter* other);
 
@@ -12755,7 +12999,7 @@ class MemoryDataParameter : public ::google::protobuf::Message /* @@protoc_inser
                &_MemoryDataParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    69;
+    71;
 
   void Swap(MemoryDataParameter* other);
 
@@ -12887,7 +13131,7 @@ class MultiBoxLossParameter : public ::google::protobuf::Message /* @@protoc_ins
                &_MultiBoxLossParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    70;
+    72;
 
   void Swap(MultiBoxLossParameter* other);
 
@@ -13307,7 +13551,7 @@ class MVNParameter : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_MVNParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    71;
+    73;
 
   void Swap(MVNParameter* other);
 
@@ -13419,7 +13663,7 @@ class NormalizeParameter : public ::google::protobuf::Message /* @@protoc_insert
                &_NormalizeParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    72;
+    74;
 
   void Swap(NormalizeParameter* other);
 
@@ -13543,7 +13787,7 @@ class ParameterParameter : public ::google::protobuf::Message /* @@protoc_insert
                &_ParameterParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    73;
+    75;
 
   void Swap(ParameterParameter* other);
 
@@ -13637,7 +13881,7 @@ class PermuteParameter : public ::google::protobuf::Message /* @@protoc_insertio
                &_PermuteParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    74;
+    76;
 
   void Swap(PermuteParameter* other);
 
@@ -13732,7 +13976,7 @@ class PoolingParameter : public ::google::protobuf::Message /* @@protoc_insertio
                &_PoolingParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    75;
+    77;
 
   void Swap(PoolingParameter* other);
 
@@ -13990,7 +14234,7 @@ class PowerParameter : public ::google::protobuf::Message /* @@protoc_insertion_
                &_PowerParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    76;
+    78;
 
   void Swap(PowerParameter* other);
 
@@ -14102,7 +14346,7 @@ class PriorBoxParameter : public ::google::protobuf::Message /* @@protoc_inserti
                &_PriorBoxParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    77;
+    79;
 
   void Swap(PriorBoxParameter* other);
 
@@ -14354,7 +14598,7 @@ class PythonParameter : public ::google::protobuf::Message /* @@protoc_insertion
                &_PythonParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    78;
+    80;
 
   void Swap(PythonParameter* other);
 
@@ -14500,7 +14744,7 @@ class CPPLayerParameter : public ::google::protobuf::Message /* @@protoc_inserti
                &_CPPLayerParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    79;
+    81;
 
   void Swap(CPPLayerParameter* other);
 
@@ -14636,7 +14880,7 @@ class RecurrentParameter : public ::google::protobuf::Message /* @@protoc_insert
                &_RecurrentParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    80;
+    82;
 
   void Swap(RecurrentParameter* other);
 
@@ -14772,7 +15016,7 @@ class ReductionParameter : public ::google::protobuf::Message /* @@protoc_insert
                &_ReductionParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    81;
+    83;
 
   void Swap(ReductionParameter* other);
 
@@ -14914,7 +15158,7 @@ class ReLUParameter : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_ReLUParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    82;
+    84;
 
   void Swap(ReLUParameter* other);
 
@@ -15044,7 +15288,7 @@ class ReshapeParameter : public ::google::protobuf::Message /* @@protoc_insertio
                &_ReshapeParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    83;
+    85;
 
   void Swap(ReshapeParameter* other);
 
@@ -15158,7 +15402,7 @@ class ScaleParameter : public ::google::protobuf::Message /* @@protoc_insertion_
                &_ScaleParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    84;
+    86;
 
   void Swap(ScaleParameter* other);
 
@@ -15294,7 +15538,7 @@ class SigmoidParameter : public ::google::protobuf::Message /* @@protoc_insertio
                &_SigmoidParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    85;
+    87;
 
   void Swap(SigmoidParameter* other);
 
@@ -15414,7 +15658,7 @@ class SliceParameter : public ::google::protobuf::Message /* @@protoc_insertion_
                &_SliceParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    86;
+    88;
 
   void Swap(SliceParameter* other);
 
@@ -15529,7 +15773,7 @@ class SoftmaxParameter : public ::google::protobuf::Message /* @@protoc_insertio
                &_SoftmaxParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    87;
+    89;
 
   void Swap(SoftmaxParameter* other);
 
@@ -15721,7 +15965,7 @@ class TanHParameter : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_TanHParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    88;
+    90;
 
   void Swap(TanHParameter* other);
 
@@ -15841,7 +16085,7 @@ class TileParameter : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_TileParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    89;
+    91;
 
   void Swap(TileParameter* other);
 
@@ -15943,7 +16187,7 @@ class ThresholdParameter : public ::google::protobuf::Message /* @@protoc_insert
                &_ThresholdParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    90;
+    92;
 
   void Swap(ThresholdParameter* other);
 
@@ -16035,7 +16279,7 @@ class VideoDataParameter : public ::google::protobuf::Message /* @@protoc_insert
                &_VideoDataParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    91;
+    93;
 
   void Swap(VideoDataParameter* other);
 
@@ -16191,7 +16435,7 @@ class WindowDataParameter : public ::google::protobuf::Message /* @@protoc_inser
                &_WindowDataParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    92;
+    94;
 
   void Swap(WindowDataParameter* other);
 
@@ -16436,7 +16680,7 @@ class SPPParameter : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_SPPParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    93;
+    95;
 
   void Swap(SPPParameter* other);
 
@@ -16604,7 +16848,7 @@ class V1LayerParameter : public ::google::protobuf::Message /* @@protoc_insertio
                &_V1LayerParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    94;
+    96;
 
   void Swap(V1LayerParameter* other);
 
@@ -17372,7 +17616,7 @@ class V0LayerParameter : public ::google::protobuf::Message /* @@protoc_insertio
                &_V0LayerParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    95;
+    97;
 
   void Swap(V0LayerParameter* other);
 
@@ -17918,7 +18162,7 @@ class PReLUParameter : public ::google::protobuf::Message /* @@protoc_insertion_
                &_PReLUParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    96;
+    98;
 
   void Swap(PReLUParameter* other);
 
@@ -18022,7 +18266,7 @@ class TransposeParameter : public ::google::protobuf::Message /* @@protoc_insert
                &_TransposeParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    97;
+    99;
 
   void Swap(TransposeParameter* other);
 
@@ -18117,7 +18361,7 @@ class ReverseParameter : public ::google::protobuf::Message /* @@protoc_insertio
                &_ReverseParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    98;
+    100;
 
   void Swap(ReverseParameter* other);
 
@@ -18209,7 +18453,7 @@ class LSTMParameter : public ::google::protobuf::Message /* @@protoc_insertion_p
                &_LSTMParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    99;
+    101;
 
   void Swap(LSTMParameter* other);
 
@@ -18345,7 +18589,7 @@ class CTCParameter : public ::google::protobuf::Message /* @@protoc_insertion_po
                &_CTCParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    100;
+    102;
 
   void Swap(CTCParameter* other);
 
@@ -18475,7 +18719,7 @@ class CenterLossParameter : public ::google::protobuf::Message /* @@protoc_inser
                &_CenterLossParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    101;
+    103;
 
   void Swap(CenterLossParameter* other);
 
@@ -18589,7 +18833,7 @@ class CtcLossParameter : public ::google::protobuf::Message /* @@protoc_insertio
                &_CtcLossParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    102;
+    104;
 
   void Swap(CtcLossParameter* other);
 
@@ -18701,7 +18945,7 @@ class ContinuationIndicatorParameter : public ::google::protobuf::Message /* @@p
                &_ContinuationIndicatorParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    103;
+    105;
 
   void Swap(ContinuationIndicatorParameter* other);
 
@@ -18803,7 +19047,7 @@ class LabelsequenceAccuracyParameter : public ::google::protobuf::Message /* @@p
                &_LabelsequenceAccuracyParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    104;
+    106;
 
   void Swap(LabelsequenceAccuracyParameter* other);
 
@@ -18895,7 +19139,7 @@ class SpatialTransformerParameter : public ::google::protobuf::Message /* @@prot
                &_SpatialTransformerParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    105;
+    107;
 
   void Swap(SpatialTransformerParameter* other);
 
@@ -19105,7 +19349,7 @@ class PowerFileParameter : public ::google::protobuf::Message /* @@protoc_insert
                &_PowerFileParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    106;
+    108;
 
   void Swap(PowerFileParameter* other);
 
@@ -19205,7 +19449,7 @@ class STLossParameter : public ::google::protobuf::Message /* @@protoc_insertion
                &_STLossParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    107;
+    109;
 
   void Swap(STLossParameter* other);
 
@@ -19310,7 +19554,7 @@ class LocLossParameter : public ::google::protobuf::Message /* @@protoc_insertio
                &_LocLossParameter_default_instance_);
   }
   static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
-    108;
+    110;
 
   void Swap(LocLossParameter* other);
 
@@ -24548,13 +24792,13 @@ LayerParameter::mutable_top() {
 
 // optional .caffe.Phase phase = 10;
 inline bool LayerParameter::has_phase() const {
-  return (_has_bits_[2] & 0x00004000u) != 0;
+  return (_has_bits_[2] & 0x00010000u) != 0;
 }
 inline void LayerParameter::set_has_phase() {
-  _has_bits_[2] |= 0x00004000u;
+  _has_bits_[2] |= 0x00010000u;
 }
 inline void LayerParameter::clear_has_phase() {
-  _has_bits_[2] &= ~0x00004000u;
+  _has_bits_[2] &= ~0x00010000u;
 }
 inline void LayerParameter::clear_phase() {
   phase_ = 0;
@@ -24888,13 +25132,13 @@ inline void LayerParameter::set_allocated_accuracy_param(::caffe::AccuracyParame
 
 // optional .caffe.AnnotatedDataParameter annotated_data_param = 200;
 inline bool LayerParameter::has_annotated_data_param() const {
-  return (_has_bits_[2] & 0x00000010u) != 0;
+  return (_has_bits_[2] & 0x00000040u) != 0;
 }
 inline void LayerParameter::set_has_annotated_data_param() {
-  _has_bits_[2] |= 0x00000010u;
+  _has_bits_[2] |= 0x00000040u;
 }
 inline void LayerParameter::clear_has_annotated_data_param() {
-  _has_bits_[2] &= ~0x00000010u;
+  _has_bits_[2] &= ~0x00000040u;
 }
 inline void LayerParameter::clear_annotated_data_param() {
   if (annotated_data_param_ != NULL) annotated_data_param_->::caffe::AnnotatedDataParameter::Clear();
@@ -25338,13 +25582,13 @@ inline void LayerParameter::set_allocated_data_param(::caffe::DataParameter* dat
 
 // optional .caffe.DetectionEvaluateParameter detection_evaluate_param = 205;
 inline bool LayerParameter::has_detection_evaluate_param() const {
-  return (_has_bits_[2] & 0x00000200u) != 0;
+  return (_has_bits_[2] & 0x00000800u) != 0;
 }
 inline void LayerParameter::set_has_detection_evaluate_param() {
-  _has_bits_[2] |= 0x00000200u;
+  _has_bits_[2] |= 0x00000800u;
 }
 inline void LayerParameter::clear_has_detection_evaluate_param() {
-  _has_bits_[2] &= ~0x00000200u;
+  _has_bits_[2] &= ~0x00000800u;
 }
 inline void LayerParameter::clear_detection_evaluate_param() {
   if (detection_evaluate_param_ != NULL) detection_evaluate_param_->::caffe::DetectionEvaluateParameter::Clear();
@@ -25383,13 +25627,13 @@ inline void LayerParameter::set_allocated_detection_evaluate_param(::caffe::Dete
 
 // optional .caffe.DetectionOutputParameter detection_output_param = 204;
 inline bool LayerParameter::has_detection_output_param() const {
-  return (_has_bits_[2] & 0x00000100u) != 0;
+  return (_has_bits_[2] & 0x00000400u) != 0;
 }
 inline void LayerParameter::set_has_detection_output_param() {
-  _has_bits_[2] |= 0x00000100u;
+  _has_bits_[2] |= 0x00000400u;
 }
 inline void LayerParameter::clear_has_detection_output_param() {
-  _has_bits_[2] &= ~0x00000100u;
+  _has_bits_[2] &= ~0x00000400u;
 }
 inline void LayerParameter::clear_detection_output_param() {
   if (detection_output_param_ != NULL) detection_output_param_->::caffe::DetectionOutputParameter::Clear();
@@ -26193,13 +26437,13 @@ inline void LayerParameter::set_allocated_memory_data_param(::caffe::MemoryDataP
 
 // optional .caffe.MultiBoxLossParameter multibox_loss_param = 201;
 inline bool LayerParameter::has_multibox_loss_param() const {
-  return (_has_bits_[2] & 0x00000020u) != 0;
+  return (_has_bits_[2] & 0x00000080u) != 0;
 }
 inline void LayerParameter::set_has_multibox_loss_param() {
-  _has_bits_[2] |= 0x00000020u;
+  _has_bits_[2] |= 0x00000080u;
 }
 inline void LayerParameter::clear_has_multibox_loss_param() {
-  _has_bits_[2] &= ~0x00000020u;
+  _has_bits_[2] &= ~0x00000080u;
 }
 inline void LayerParameter::clear_multibox_loss_param() {
   if (multibox_loss_param_ != NULL) multibox_loss_param_->::caffe::MultiBoxLossParameter::Clear();
@@ -26283,13 +26527,13 @@ inline void LayerParameter::set_allocated_mvn_param(::caffe::MVNParameter* mvn_p
 
 // optional .caffe.NormalizeParameter norm_param = 206;
 inline bool LayerParameter::has_norm_param() const {
-  return (_has_bits_[2] & 0x00000400u) != 0;
+  return (_has_bits_[2] & 0x00001000u) != 0;
 }
 inline void LayerParameter::set_has_norm_param() {
-  _has_bits_[2] |= 0x00000400u;
+  _has_bits_[2] |= 0x00001000u;
 }
 inline void LayerParameter::clear_has_norm_param() {
-  _has_bits_[2] &= ~0x00000400u;
+  _has_bits_[2] &= ~0x00001000u;
 }
 inline void LayerParameter::clear_norm_param() {
   if (norm_param_ != NULL) norm_param_->::caffe::NormalizeParameter::Clear();
@@ -26328,13 +26572,13 @@ inline void LayerParameter::set_allocated_norm_param(::caffe::NormalizeParameter
 
 // optional .caffe.PredictBoxParameter predict_box_param = 209;
 inline bool LayerParameter::has_predict_box_param() const {
-  return (_has_bits_[2] & 0x00001000u) != 0;
+  return (_has_bits_[2] & 0x00004000u) != 0;
 }
 inline void LayerParameter::set_has_predict_box_param() {
-  _has_bits_[2] |= 0x00001000u;
+  _has_bits_[2] |= 0x00004000u;
 }
 inline void LayerParameter::clear_has_predict_box_param() {
-  _has_bits_[2] &= ~0x00001000u;
+  _has_bits_[2] &= ~0x00004000u;
 }
 inline void LayerParameter::clear_predict_box_param() {
   if (predict_box_param_ != NULL) predict_box_param_->::caffe::PredictBoxParameter::Clear();
@@ -26418,13 +26662,13 @@ inline void LayerParameter::set_allocated_parameter_param(::caffe::ParameterPara
 
 // optional .caffe.PermuteParameter permute_param = 202;
 inline bool LayerParameter::has_permute_param() const {
-  return (_has_bits_[2] & 0x00000040u) != 0;
+  return (_has_bits_[2] & 0x00000100u) != 0;
 }
 inline void LayerParameter::set_has_permute_param() {
-  _has_bits_[2] |= 0x00000040u;
+  _has_bits_[2] |= 0x00000100u;
 }
 inline void LayerParameter::clear_has_permute_param() {
-  _has_bits_[2] &= ~0x00000040u;
+  _has_bits_[2] &= ~0x00000100u;
 }
 inline void LayerParameter::clear_permute_param() {
   if (permute_param_ != NULL) permute_param_->::caffe::PermuteParameter::Clear();
@@ -26598,13 +26842,13 @@ inline void LayerParameter::set_allocated_prelu_param(::caffe::PReLUParameter* p
 
 // optional .caffe.PriorBoxParameter prior_box_param = 203;
 inline bool LayerParameter::has_prior_box_param() const {
-  return (_has_bits_[2] & 0x00000080u) != 0;
+  return (_has_bits_[2] & 0x00000200u) != 0;
 }
 inline void LayerParameter::set_has_prior_box_param() {
-  _has_bits_[2] |= 0x00000080u;
+  _has_bits_[2] |= 0x00000200u;
 }
 inline void LayerParameter::clear_has_prior_box_param() {
-  _has_bits_[2] &= ~0x00000080u;
+  _has_bits_[2] &= ~0x00000200u;
 }
 inline void LayerParameter::clear_prior_box_param() {
   if (prior_box_param_ != NULL) prior_box_param_->::caffe::PriorBoxParameter::Clear();
@@ -27228,13 +27472,13 @@ inline void LayerParameter::set_allocated_tile_param(::caffe::TileParameter* til
 
 // optional .caffe.VideoDataParameter video_data_param = 207;
 inline bool LayerParameter::has_video_data_param() const {
-  return (_has_bits_[2] & 0x00000800u) != 0;
+  return (_has_bits_[2] & 0x00002000u) != 0;
 }
 inline void LayerParameter::set_has_video_data_param() {
-  _has_bits_[2] |= 0x00000800u;
+  _has_bits_[2] |= 0x00002000u;
 }
 inline void LayerParameter::clear_has_video_data_param() {
-  _has_bits_[2] &= ~0x00000800u;
+  _has_bits_[2] &= ~0x00002000u;
 }
 inline void LayerParameter::clear_video_data_param() {
   if (video_data_param_ != NULL) video_data_param_->::caffe::VideoDataParameter::Clear();
@@ -27318,13 +27562,13 @@ inline void LayerParameter::set_allocated_window_data_param(::caffe::WindowDataP
 
 // optional .caffe.FlipParameter flip_param = 212;
 inline bool LayerParameter::has_flip_param() const {
-  return (_has_bits_[2] & 0x00002000u) != 0;
+  return (_has_bits_[2] & 0x00008000u) != 0;
 }
 inline void LayerParameter::set_has_flip_param() {
-  _has_bits_[2] |= 0x00002000u;
+  _has_bits_[2] |= 0x00008000u;
 }
 inline void LayerParameter::clear_has_flip_param() {
-  _has_bits_[2] &= ~0x00002000u;
+  _has_bits_[2] &= ~0x00008000u;
 }
 inline void LayerParameter::clear_flip_param() {
   if (flip_param_ != NULL) flip_param_->::caffe::FlipParameter::Clear();
@@ -28169,6 +28413,224 @@ inline void LayerParameter::set_allocated_interp_param(::caffe::InterpParameter*
     clear_has_interp_param();
   }
   // @@protoc_insertion_point(field_set_allocated:caffe.LayerParameter.interp_param)
+}
+
+// optional .caffe.SampleTripletParameter sample_triplet_param = 167;
+inline bool LayerParameter::has_sample_triplet_param() const {
+  return (_has_bits_[2] & 0x00000010u) != 0;
+}
+inline void LayerParameter::set_has_sample_triplet_param() {
+  _has_bits_[2] |= 0x00000010u;
+}
+inline void LayerParameter::clear_has_sample_triplet_param() {
+  _has_bits_[2] &= ~0x00000010u;
+}
+inline void LayerParameter::clear_sample_triplet_param() {
+  if (sample_triplet_param_ != NULL) sample_triplet_param_->::caffe::SampleTripletParameter::Clear();
+  clear_has_sample_triplet_param();
+}
+inline const ::caffe::SampleTripletParameter& LayerParameter::sample_triplet_param() const {
+  // @@protoc_insertion_point(field_get:caffe.LayerParameter.sample_triplet_param)
+  return sample_triplet_param_ != NULL ? *sample_triplet_param_
+                         : *::caffe::SampleTripletParameter::internal_default_instance();
+}
+inline ::caffe::SampleTripletParameter* LayerParameter::mutable_sample_triplet_param() {
+  set_has_sample_triplet_param();
+  if (sample_triplet_param_ == NULL) {
+    sample_triplet_param_ = new ::caffe::SampleTripletParameter;
+  }
+  // @@protoc_insertion_point(field_mutable:caffe.LayerParameter.sample_triplet_param)
+  return sample_triplet_param_;
+}
+inline ::caffe::SampleTripletParameter* LayerParameter::release_sample_triplet_param() {
+  // @@protoc_insertion_point(field_release:caffe.LayerParameter.sample_triplet_param)
+  clear_has_sample_triplet_param();
+  ::caffe::SampleTripletParameter* temp = sample_triplet_param_;
+  sample_triplet_param_ = NULL;
+  return temp;
+}
+inline void LayerParameter::set_allocated_sample_triplet_param(::caffe::SampleTripletParameter* sample_triplet_param) {
+  delete sample_triplet_param_;
+  sample_triplet_param_ = sample_triplet_param;
+  if (sample_triplet_param) {
+    set_has_sample_triplet_param();
+  } else {
+    clear_has_sample_triplet_param();
+  }
+  // @@protoc_insertion_point(field_set_allocated:caffe.LayerParameter.sample_triplet_param)
+}
+
+// optional .caffe.TripletLossParameter triplet_loss_param = 168;
+inline bool LayerParameter::has_triplet_loss_param() const {
+  return (_has_bits_[2] & 0x00000020u) != 0;
+}
+inline void LayerParameter::set_has_triplet_loss_param() {
+  _has_bits_[2] |= 0x00000020u;
+}
+inline void LayerParameter::clear_has_triplet_loss_param() {
+  _has_bits_[2] &= ~0x00000020u;
+}
+inline void LayerParameter::clear_triplet_loss_param() {
+  if (triplet_loss_param_ != NULL) triplet_loss_param_->::caffe::TripletLossParameter::Clear();
+  clear_has_triplet_loss_param();
+}
+inline const ::caffe::TripletLossParameter& LayerParameter::triplet_loss_param() const {
+  // @@protoc_insertion_point(field_get:caffe.LayerParameter.triplet_loss_param)
+  return triplet_loss_param_ != NULL ? *triplet_loss_param_
+                         : *::caffe::TripletLossParameter::internal_default_instance();
+}
+inline ::caffe::TripletLossParameter* LayerParameter::mutable_triplet_loss_param() {
+  set_has_triplet_loss_param();
+  if (triplet_loss_param_ == NULL) {
+    triplet_loss_param_ = new ::caffe::TripletLossParameter;
+  }
+  // @@protoc_insertion_point(field_mutable:caffe.LayerParameter.triplet_loss_param)
+  return triplet_loss_param_;
+}
+inline ::caffe::TripletLossParameter* LayerParameter::release_triplet_loss_param() {
+  // @@protoc_insertion_point(field_release:caffe.LayerParameter.triplet_loss_param)
+  clear_has_triplet_loss_param();
+  ::caffe::TripletLossParameter* temp = triplet_loss_param_;
+  triplet_loss_param_ = NULL;
+  return temp;
+}
+inline void LayerParameter::set_allocated_triplet_loss_param(::caffe::TripletLossParameter* triplet_loss_param) {
+  delete triplet_loss_param_;
+  triplet_loss_param_ = triplet_loss_param;
+  if (triplet_loss_param) {
+    set_has_triplet_loss_param();
+  } else {
+    clear_has_triplet_loss_param();
+  }
+  // @@protoc_insertion_point(field_set_allocated:caffe.LayerParameter.triplet_loss_param)
+}
+
+// -------------------------------------------------------------------
+
+// TripletLossParameter
+
+// optional float margin = 1 [default = 0.1];
+inline bool TripletLossParameter::has_margin() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void TripletLossParameter::set_has_margin() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void TripletLossParameter::clear_has_margin() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void TripletLossParameter::clear_margin() {
+  margin_ = 0.1f;
+  clear_has_margin();
+}
+inline float TripletLossParameter::margin() const {
+  // @@protoc_insertion_point(field_get:caffe.TripletLossParameter.margin)
+  return margin_;
+}
+inline void TripletLossParameter::set_margin(float value) {
+  set_has_margin();
+  margin_ = value;
+  // @@protoc_insertion_point(field_set:caffe.TripletLossParameter.margin)
+}
+
+// optional float eps = 2 [default = 1e-005];
+inline bool TripletLossParameter::has_eps() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void TripletLossParameter::set_has_eps() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void TripletLossParameter::clear_has_eps() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void TripletLossParameter::clear_eps() {
+  eps_ = 1e-005f;
+  clear_has_eps();
+}
+inline float TripletLossParameter::eps() const {
+  // @@protoc_insertion_point(field_get:caffe.TripletLossParameter.eps)
+  return eps_;
+}
+inline void TripletLossParameter::set_eps(float value) {
+  set_has_eps();
+  eps_ = value;
+  // @@protoc_insertion_point(field_set:caffe.TripletLossParameter.eps)
+}
+
+// -------------------------------------------------------------------
+
+// SampleTripletParameter
+
+// optional uint32 label_num = 1;
+inline bool SampleTripletParameter::has_label_num() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void SampleTripletParameter::set_has_label_num() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void SampleTripletParameter::clear_has_label_num() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void SampleTripletParameter::clear_label_num() {
+  label_num_ = 0u;
+  clear_has_label_num();
+}
+inline ::google::protobuf::uint32 SampleTripletParameter::label_num() const {
+  // @@protoc_insertion_point(field_get:caffe.SampleTripletParameter.label_num)
+  return label_num_;
+}
+inline void SampleTripletParameter::set_label_num(::google::protobuf::uint32 value) {
+  set_has_label_num();
+  label_num_ = value;
+  // @@protoc_insertion_point(field_set:caffe.SampleTripletParameter.label_num)
+}
+
+// optional uint32 sample_num = 2;
+inline bool SampleTripletParameter::has_sample_num() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void SampleTripletParameter::set_has_sample_num() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void SampleTripletParameter::clear_has_sample_num() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void SampleTripletParameter::clear_sample_num() {
+  sample_num_ = 0u;
+  clear_has_sample_num();
+}
+inline ::google::protobuf::uint32 SampleTripletParameter::sample_num() const {
+  // @@protoc_insertion_point(field_get:caffe.SampleTripletParameter.sample_num)
+  return sample_num_;
+}
+inline void SampleTripletParameter::set_sample_num(::google::protobuf::uint32 value) {
+  set_has_sample_num();
+  sample_num_ = value;
+  // @@protoc_insertion_point(field_set:caffe.SampleTripletParameter.sample_num)
+}
+
+// optional float eps = 3 [default = 1e-005];
+inline bool SampleTripletParameter::has_eps() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void SampleTripletParameter::set_has_eps() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void SampleTripletParameter::clear_has_eps() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void SampleTripletParameter::clear_eps() {
+  eps_ = 1e-005f;
+  clear_has_eps();
+}
+inline float SampleTripletParameter::eps() const {
+  // @@protoc_insertion_point(field_get:caffe.SampleTripletParameter.eps)
+  return eps_;
+}
+inline void SampleTripletParameter::set_eps(float value) {
+  set_has_eps();
+  eps_ = value;
+  // @@protoc_insertion_point(field_set:caffe.SampleTripletParameter.eps)
 }
 
 // -------------------------------------------------------------------
@@ -43163,6 +43625,10 @@ inline void LocLossParameter::set_threshold(double value) {
 }
 
 #endif  // !PROTOBUF_INLINE_NOT_IN_HEADERS
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------

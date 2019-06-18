@@ -11,3 +11,5 @@
 trainCenterNet
 /release/nettest
 .vs
+/.vscode
+/Build

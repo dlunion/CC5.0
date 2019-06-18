@@ -110,6 +110,7 @@
     <ClInclude Include="..\include\caffe\layers\reshape_layer.hpp" />
     <ClInclude Include="..\include\caffe\layers\rnn_layer.hpp" />
     <ClInclude Include="..\include\caffe\layers\roi_pooling_layer.hpp" />
+    <ClInclude Include="..\include\caffe\layers\sample_triplet_layer.hpp" />
     <ClInclude Include="..\include\caffe\layers\scale_layer.hpp" />
     <ClInclude Include="..\include\caffe\layers\sigmoid_cross_entropy_loss_layer.hpp" />
     <ClInclude Include="..\include\caffe\layers\sigmoid_layer.hpp" />
@@ -129,6 +130,7 @@
     <ClInclude Include="..\include\caffe\layers\tanh_layer.hpp" />
     <ClInclude Include="..\include\caffe\layers\threshold_layer.hpp" />
     <ClInclude Include="..\include\caffe\layers\tile_layer.hpp" />
+    <ClInclude Include="..\include\caffe\layers\triplet_loss_layer.hpp" />
     <ClInclude Include="..\include\caffe\layers\video_data_layer.hpp" />
     <ClInclude Include="..\include\caffe\layers\window_data_layer.hpp" />
     <ClInclude Include="..\include\caffe\layer_factory.hpp" />
@@ -255,6 +257,7 @@
     <ClCompile Include="..\src\caffe\layers\reverse_layer.cpp" />
     <ClCompile Include="..\src\caffe\layers\rnn_layer.cpp" />
     <ClCompile Include="..\src\caffe\layers\roi_pooling_layer.cpp" />
+    <ClCompile Include="..\src\caffe\layers\sample_triplet_layer.cpp" />
     <ClCompile Include="..\src\caffe\layers\scale_layer.cpp" />
     <ClCompile Include="..\src\caffe\layers\sigmoid_cross_entropy_loss_layer.cpp" />
     <ClCompile Include="..\src\caffe\layers\sigmoid_layer.cpp" />
@@ -272,6 +275,7 @@
     <ClCompile Include="..\src\caffe\layers\threshold_layer.cpp" />
     <ClCompile Include="..\src\caffe\layers\tile_layer.cpp" />
     <ClCompile Include="..\src\caffe\layers\transpose_layer.cpp" />
+    <ClCompile Include="..\src\caffe\layers\triplet_loss_layer.cpp" />
     <ClCompile Include="..\src\caffe\layers\video_data_layer.cpp" />
     <ClCompile Include="..\src\caffe\layers\window_data_layer.cpp" />
     <ClCompile Include="..\src\caffe\layer_factory.cpp" />
@@ -362,6 +366,7 @@
     <CudaCompile Include="..\src\caffe\layers\relu_layer.cu" />
     <CudaCompile Include="..\src\caffe\layers\reverse_layer.cu" />
     <CudaCompile Include="..\src\caffe\layers\roi_pooling_layer.cu" />
+    <CudaCompile Include="..\src\caffe\layers\sample_triplet_layer.cu" />
     <CudaCompile Include="..\src\caffe\layers\scale_layer.cu" />
     <CudaCompile Include="..\src\caffe\layers\sigmoid_cross_entropy_loss_layer.cu" />
     <CudaCompile Include="..\src\caffe\layers\sigmoid_layer.cu" />
@@ -378,6 +383,7 @@
     <CudaCompile Include="..\src\caffe\layers\threshold_layer.cu" />
     <CudaCompile Include="..\src\caffe\layers\tile_layer.cu" />
     <CudaCompile Include="..\src\caffe\layers\transpose_layer.cu" />
+    <CudaCompile Include="..\src\caffe\layers\triplet_loss_layer.cu" />
     <CudaCompile Include="..\src\caffe\solvers\adadelta_solver.cu" />
     <CudaCompile Include="..\src\caffe\solvers\adagrad_solver.cu" />
     <CudaCompile Include="..\src\caffe\solvers\adam_solver.cu" />

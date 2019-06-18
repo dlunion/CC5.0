@@ -599,6 +599,19 @@ message LayerParameter {
 
   optional DenseCRFParameter dense_crf_param = 165;
   optional InterpParameter interp_param = 166;
+  optional SampleTripletParameter sample_triplet_param = 167;
+  optional TripletLossParameter triplet_loss_param = 168;
+}
+
+message TripletLossParameter {
+  optional float margin = 1 [default = 0.1];
+  optional float eps = 2 [default = 1e-5];
+}
+
+message SampleTripletParameter {
+  optional uint32 label_num = 1;
+  optional uint32 sample_num = 2;
+  optional float eps = 3 [default = 1e-5];
 }
 
 message InterpParameter {
