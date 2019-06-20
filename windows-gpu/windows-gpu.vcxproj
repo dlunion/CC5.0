@@ -61,6 +61,8 @@
     <ClInclude Include="..\include\caffe\layers\cudnn_tanh_layer.hpp" />
     <ClInclude Include="..\include\caffe\layers\data_layer.hpp" />
     <ClInclude Include="..\include\caffe\layers\deconv_layer.hpp" />
+    <ClInclude Include="..\include\caffe\layers\deformable_conv_layer.hpp" />
+    <ClInclude Include="..\include\caffe\layers\deformable_im2col.hpp" />
     <ClInclude Include="..\include\caffe\layers\densecrf_layer.hpp" />
     <ClInclude Include="..\include\caffe\layers\detection_evaluate_layer.hpp" />
     <ClInclude Include="..\include\caffe\layers\detection_output_layer.hpp" />
@@ -207,6 +209,7 @@
     <ClCompile Include="..\src\caffe\layers\cudnn_tanh_layer.cpp" />
     <ClCompile Include="..\src\caffe\layers\data_layer.cpp" />
     <ClCompile Include="..\src\caffe\layers\deconv_layer.cpp" />
+    <ClCompile Include="..\src\caffe\layers\deformable_conv_layer.cpp" />
     <ClCompile Include="..\src\caffe\layers\densecrf_layer.cpp" />
     <ClCompile Include="..\src\caffe\layers\detection_evaluate_layer.cpp" />
     <ClCompile Include="..\src\caffe\layers\detection_output_layer.cpp" />
@@ -334,6 +337,8 @@
     <CudaCompile Include="..\src\caffe\layers\cudnn_softmax_layer.cu" />
     <CudaCompile Include="..\src\caffe\layers\cudnn_tanh_layer.cu" />
     <CudaCompile Include="..\src\caffe\layers\deconv_layer.cu" />
+    <CudaCompile Include="..\src\caffe\layers\deformable_conv_layer.cu" />
+    <CudaCompile Include="..\src\caffe\layers\deformable_im2col.cu" />
     <CudaCompile Include="..\src\caffe\layers\detection_output_layer.cu" />
     <CudaCompile Include="..\src\caffe\layers\dropout_layer.cu" />
     <CudaCompile Include="..\src\caffe\layers\eltwise_layer.cu" />

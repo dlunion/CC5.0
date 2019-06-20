@@ -190,4 +190,5 @@ path1 = L::custom("LeftPooling", path1, {}, "leftPooling");
 ```
 
 ### 引用
-[OpenPose](https://github.com/CMU-Perceptual-Computing-Lab/openpose): Real-time multi-person keypoint detection library for body, face, hands, and foot estimation
+* 1.[OpenPose](https://github.com/CMU-Perceptual-Computing-Lab/openpose): Real-time multi-person keypoint detection library for body, face, hands, and foot estimation
+* 2.[Deformable-ConvNets-caffe](https://github.com/unsky/Deformable-ConvNets-caffe)

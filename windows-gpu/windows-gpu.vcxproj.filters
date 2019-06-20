@@ -507,6 +507,12 @@
     <ClInclude Include="..\include\caffe\cc\core\cc_v5.h">
       <Filter>include\cc\core</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\caffe\layers\deformable_conv_layer.hpp">
+      <Filter>include\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\caffe\layers\deformable_im2col.hpp">
+      <Filter>include\layers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\caffe\solvers\adadelta_solver.cpp">
@@ -941,6 +947,9 @@
     <ClCompile Include="..\include\caffe\layers\multinomial_logistic_loss_layer.cpp">
       <Filter>include\layers</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\caffe\layers\deformable_conv_layer.cpp">
+      <Filter>src\layers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCOmpile Include="..\src\caffe\util\bbox_util.cu">
@@ -1172,6 +1181,12 @@
       <Filter>src\layers</Filter>
     </CudaCompile>
     <CudaCompile Include="..\src\caffe\layers\transpose_layer.cu">
+      <Filter>src\layers</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\src\caffe\layers\deformable_conv_layer.cu">
+      <Filter>src\layers</Filter>
+    </CudaCompile>
+    <CudaCompile Include="..\src\caffe\layers\deformable_im2col.cu">
       <Filter>src\layers</Filter>
     </CudaCompile>
   </ItemGroup>

@@ -88,11 +88,20 @@ namespace cc{
 		const float* gpu_data() const;
 		float* mutable_cpu_data();
 		float* mutable_gpu_data();
+		inline float* cpu_ptr(int n = 0, int c = 0, int h = 0, int w = 0){ return mutable_cpu_data() + offset(n, c, h, w); }
+		float* gpu_ptr(int n = 0, int c = 0, int h = 0, int w = 0){ return mutable_gpu_data() + offset(n, c, h, w); }
+		float& cpu_at(int n = 0, int c = 0, int h = 0, int w = 0){ return *(mutable_cpu_data() + offset(n, c, h, w)); }
+		float& gpu_at(int n = 0, int c = 0, int h = 0, int w = 0){ return *(mutable_gpu_data() + offset(n, c, h, w)); }
 
 		const float* cpu_diff() const;
 		const float* gpu_diff() const;
 		float* mutable_cpu_diff();
 		float* mutable_gpu_diff();
+		float* cpu_diff_ptr(int n = 0, int c = 0, int h = 0, int w = 0){ return mutable_cpu_diff() + offset(n, c, h, w); }
+		float* gpu_diff_ptr(int n = 0, int c = 0, int h = 0, int w = 0){ return mutable_gpu_diff() + offset(n, c, h, w); }
+		float& cpu_diff_at(int n = 0, int c = 0, int h = 0, int w = 0){ return *(mutable_cpu_diff() + offset(n, c, h, w)); }
+		float& gpu_diff_at(int n = 0, int c = 0, int h = 0, int w = 0){ return *(mutable_gpu_diff() + offset(n, c, h, w)); }
+		void setTo(float value);
 
 		void reshape(int num = 1, int channels = 1, int height = 1, int width = 1);
 		void reshape(int numShape, int* shapeDims);

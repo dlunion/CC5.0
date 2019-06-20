@@ -314,7 +314,7 @@ namespace cc{
 	//
 	//    指定要优化的对象，图
 	//
-	void OOptimizer::minimize(const vector<Tensor>& graphs){
+	void OOptimizer::minimize(const GraphInput& graphs){
 		graph_type = GraphType_FromTensor;
 		this->graphs = graphs;
 	}
@@ -335,24 +335,24 @@ namespace cc{
 		this->file_graph = graphfile;
 	}
 
+	GraphInput::GraphInput(const std::vector<Tensor>& input){
+		this->graphs = input;
+	}
+
+	GraphInput::GraphInput(const Tensor& input){
+		this->graphs = { input };
+	}
+
+	GraphInput::GraphInput(const std::initializer_list<Tensor>& input){
+		this->graphs = input;
+	}
+
+	GraphInput::GraphInput(){
+	}
+
 	namespace engine{
 		namespace caffe{
-
-			GraphInput::GraphInput(const std::vector<Tensor>& input){
-				this->graphs = input;
-			}
-
-			GraphInput::GraphInput(const Tensor& input){
-				this->graphs = { input };
-			}
-
-			GraphInput::GraphInput(const std::initializer_list<Tensor>& input){
-				this->graphs = input;
-			}
-
-			GraphInput::GraphInput(){
-			}
-
+			
 			void serial_layer(OLayerOp* layer, vector<OLayerOp*>& layer_order,
 				map<OLayerOp*, bool>& layer_state, map<string, OLayerOp*>& output_blob_layer_map){
 
@@ -603,7 +603,7 @@ namespace cc{
 
 			for (int i = 0; i < order.size(); ++i)
 				part += f("order: %d\n", order[i]);
-			
+
 			if (order.empty()) return "";
 			return "permute_param {\n" + part + "}";
 		}
@@ -834,6 +834,75 @@ namespace cc{
 			return result;
 		}
 
+		string ODeformableConv::serial_param(){
+
+			string result = f(
+				"deformable_convolution_param {\n"
+				"num_output: %d\n",
+				kernel[2]);
+			if (!bias_term) result += f("bias_term: %s\n", bool_string(bias_term));
+
+			//卷积核的定义
+			if (kernel[0] != kernel[1]){
+				result += f(
+					"kernel_size: %d\n"
+					"kernel_size: %d\n"
+					, kernel[0], kernel[1]);
+			}
+			else{
+				result += f("kernel_size: %d\n", kernel[0]);
+			}
+
+			if (padding_size[0] != padding_size[1]){
+				result += f(
+					"pad: %d\n"
+					"pad: %d\n"
+					, padding_size[0], padding_size[1]);
+			}
+			else{
+				if (padding_size[0] != 0)
+					result += f("pad: %d\n", padding_size[0]);
+			}
+
+			if (strides[0] != strides[1]){
+				result += f(
+					"stride: %d\n"
+					"stride: %d\n"
+					, strides[0], strides[1]);
+			}
+			else{
+				if (strides[0] != 1)
+					result += f("stride: %d\n", strides[0]);
+			}
+
+			if (dilations[0] != dilations[1]){
+				result += f(
+					"dilation: %d\n"
+					"dilation: %d\n"
+					, dilations[0], dilations[1]);
+			}
+			else{
+				if (dilations[0] != 1)
+					result += f("dilation: %d\n", dilations[0]);
+			}
+
+			result += f("engine: %d\n", 1);
+			result += f("deformable_group: %d\n", deformable_group);
+
+			if (kernel_initializer){
+				result += f("weight_filler {\n%s}\n",
+					kernel_initializer->seril().c_str());
+			}
+
+			if (bias_initializer){
+				result += f("bias_filler {\n%s}\n",
+					bias_initializer->seril().c_str());
+			}
+
+			result += "}";
+			return result;
+		}
+
 		string OIm2Col::serial_param(){
 
 			string result = f(
@@ -1030,7 +1099,7 @@ namespace cc{
 			for (int i = 0; i < output.size(); ++i){
 
 				Tensor blob(new OTensor());
-				blob->name = layer->name + "/" + output[i];
+				blob->name = name.empty() ? output[i] : layer->name + "/" + output[i];
 				blob->owner = layer;
 				layer->output[i] = blob;
 			}
@@ -1052,7 +1121,7 @@ namespace cc{
 			layer->output.resize(1);
 
 			Tensor blob(new OTensor());
-			blob->name = layer->name + "/" + output;
+			blob->name = name.empty() ? output : layer->name + "/" + output;
 			blob->owner = layer;
 			layer->output[0] = blob;
 			return blob;
@@ -1173,7 +1242,7 @@ namespace cc{
 			conv->kernel_initializer->stdval = 0.01;
 			conv->bias_initializer->type = "constant";
 			conv->bias_initializer->value = 0;
-		
+
 
 			LayerOp layer(conv);
 			layer->name = layer->scope_name_or_next_auto_name(name);
@@ -1207,6 +1276,78 @@ namespace cc{
 
 			layer->input[0] = x;
 			layer->output[0] = blob;
+			return blob;
+		}
+
+		//
+		//    可变卷积层的定义
+		//    x:        tensor
+		//              需要卷积的tensor
+		//
+		//    kernel:   3-d array
+		//              卷积核的大小，这里是2维，指定为height, width, output
+		//
+		//    padding:    "valid"or "same"
+		//              指定padding的实现方式，valid即卷积后尺寸，无padding，same即卷积后尺寸和x一致
+		//
+		//    strides:  2-d array, height, width
+		//              指定步长
+		//
+		//    dilations: 2-d array, height, width
+		//              卷积的膨胀尺寸
+		//
+		//    name:     指定卷积层名称
+		//              默认是为空，即自动生成的名称
+		//
+		Tensor deformableConv(const Tensor& x, const vector<int>& kernel, const vector<int>& padding,
+			const vector<int>& strides, const vector<int>& dilations, const string& name){
+
+			ODeformableConv* conv = new ODeformableConv();
+			conv->kernel = kernel;
+			conv->padding_size = padding;
+			conv->strides = strides;
+			conv->dilations = dilations;
+
+
+			//我们一般默认卷积的权重初始化方式会是gaussian
+			conv->kernel_initializer.reset(new Initializer());
+			conv->bias_initializer.reset(new Initializer());
+
+			conv->kernel_initializer->type = "gaussian";
+			conv->kernel_initializer->stdval = 0.01;
+			conv->bias_initializer->type = "constant";
+			conv->bias_initializer->value = 0;
+
+			LayerOp layer(conv);
+			layer->name = layer->scope_name_or_next_auto_name(name);
+
+			layer->kernel_mult.reset(new ParamSpecMult());
+			layer->bias_mult.reset(new ParamSpecMult());
+
+			layer->kernel_mult->decay_mult = 0;
+			layer->kernel_mult->lr_mult = 1;
+
+			layer->bias_mult->decay_mult = 0;
+			layer->bias_mult->lr_mult = 1;
+
+			Tensor blob(new OTensor());
+			blob->name = layer->name;
+			blob->owner = layer;
+
+			auto offset = conv2d(x, { 3, 3, conv->deformable_group * kernel[0] * kernel[1] * 2 }, "same", { 1, 1 }, { 2, 2 }, name + "/offset");
+			OConv2D* rconv = (OConv2D*)offset->owner.get();
+			rconv->padding_size = {2, 2};
+
+			rconv->bias_initializer.reset(new cc::Initializer());
+			rconv->kernel_initializer.reset(new cc::Initializer());
+
+			rconv->kernel_initializer->type = "constant";
+			rconv->kernel_initializer->value = 0;
+			rconv->bias_initializer->type = "constant";
+			rconv->bias_initializer->value = 0;
+
+			layer->input = { x, offset };
+			layer->output = { blob };
 			return blob;
 		}
 

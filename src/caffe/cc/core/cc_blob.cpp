@@ -3,6 +3,7 @@
 #include "caffe/cc/core/cc_v5.h"
 #include "caffe/blob.hpp"
 #include <vector>
+#include "caffe/util/math_functions.hpp"
 using namespace std;
 
 namespace cc{
@@ -164,6 +165,13 @@ namespace cc{
 		height = height == -1 ? ptr->height() : height;
 		width = width == -1 ? ptr->width() : width;
 		ptr->Reshape(num, channels, height, width);
+	}
+
+	void Blob::setTo(float value){
+		
+		size_t c = ptr->count();
+		if (c > 0)
+			caffe::caffe_set(c, value, ptr->mutable_cpu_data());
 	}
 
 	int Blob::offset(const int n, const int c, const int h, const int w) const{

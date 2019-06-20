@@ -12,10 +12,6 @@
 #include <string>
 #include <vector>
 
-#ifdef WIN32
-#pragma comment(lib, "libcaffe5.0.lib")
-#endif
-
 using std::string;
 using std::vector;
 
@@ -411,6 +407,15 @@ namespace cc{
 		GraphType_FromPrototxt
 	};
 
+	struct GraphInput{
+
+		vector<Tensor> graphs;
+		GraphInput(const std::vector<Tensor>& input);
+		GraphInput(const std::initializer_list<Tensor>& input);
+		GraphInput(const Tensor& input);
+		GraphInput();
+	};
+
 	//
 	//    优化器定义的基类
 	//
@@ -443,7 +448,7 @@ namespace cc{
 		vector<int> device_ids;
 
 		GraphType graph_type = GraphType_None;
-		vector<Tensor> graphs;
+		GraphInput graphs;
 		string str_graph;
 		string file_graph;
 
@@ -462,7 +467,7 @@ namespace cc{
 		//
 		//    指定要优化的对象，图
 		//
-		virtual void minimize(const vector<Tensor>& graphs);
+		virtual void minimize(const GraphInput& graphs);
 
 		//
 		//    指定要优化的对象，图
@@ -722,7 +727,7 @@ namespace cc{
 			string padding;
 
 			virtual string serial_param();
-			virtual const char* caffe_type_name(){ return "Im2Col"; }
+			virtual const char* caffe_type_name(){ return "Im2col"; }
 		};
 
 		//
@@ -741,6 +746,25 @@ namespace cc{
 
 			virtual string serial_param();
 			virtual const char* caffe_type_name(){ return "Convolution"; }
+		};
+
+		//
+		//    可变卷积层的定义
+		//
+		struct ODeformableConv : public OLayerOp{
+
+			vector<int> kernel;
+			vector<int> strides;
+			vector<int> dilations;
+			vector<int> padding_size;
+			int deformable_group = 4;
+			string padding;
+			bool bias_term = true;
+			std::shared_ptr<Initializer> kernel_initializer;
+			std::shared_ptr<Initializer> bias_initializer;
+
+			virtual string serial_param();
+			virtual const char* caffe_type_name(){ return "DeformableConvolution"; }
 		};
 
 		//
@@ -871,6 +895,8 @@ namespace cc{
 			const vector<int>& strides = { 1, 1 }, const vector<int>& dilations = { 1, 1 }, const string& name = "");
 		Tensor conv2d(const Tensor& x, const vector<int>& kernel, const string& padding = "same",
 			const vector<int>& strides = { 1, 1 }, const vector<int>& dilations = { 1, 1 }, const string& name = "");
+		Tensor deformableConv(const Tensor& x, const vector<int>& kernel, const vector<int>& padding = { 2, 2 },
+			const vector<int>& strides = { 1, 1 }, const vector<int>& dilations = { 2, 2 }, const string& name = "");
 		Tensor deconv2d(const Tensor& x, const vector<int>& kernel, const string& padding = "same",
 			const vector<int>& strides = { 1, 1 }, const vector<int>& dilations = { 1, 1 }, const string& name = "");
 		Tensor transpose(const Tensor& x, vector<int> order, const string& name = "", bool inplace = true);
@@ -1088,15 +1114,6 @@ namespace cc{
 	namespace engine{
 
 		namespace caffe{
-
-			struct GraphInput{
-
-				vector<Tensor> graphs;
-				GraphInput(const std::vector<Tensor>& input);
-				GraphInput(const std::initializer_list<Tensor>& input);
-				GraphInput(const Tensor& input);
-				GraphInput();
-			};
 			
 			//
 			//    将计算图编译到caffe支持
