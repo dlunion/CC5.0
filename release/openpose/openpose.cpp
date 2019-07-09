@@ -11,7 +11,8 @@ using namespace std;
 
 namespace L = cc::layers;
 
-cc::Tensor poseConv2d(cc::Tensor& input, int kernel_size, int num_output, const string& name){
+cc::Tensor _conv2d(cc::Tensor& input, int kernel_size, int num_output, const string& name){
+
 	auto x = L::conv2d(input, { kernel_size, kernel_size, num_output }, "same", { 1, 1 }, { 1, 1 }, name);
 	L::OConv2D* conv = (L::OConv2D*)x->owner.get();
 	conv->bias_initializer.reset(new cc::Initializer());
@@ -24,30 +25,33 @@ cc::Tensor poseConv2d(cc::Tensor& input, int kernel_size, int num_output, const 
 	return x;
 }
 
-cc::Tensor vgg(const cc::Tensor& input){
+cc::Tensor VGG16(const cc::Tensor& input){
 
-	cc::Tensor x = input;
-	int num_output = 64;
+	string vgg16_define[] = { "64", "64", "M", "128", "128", "M", "256", "256", "256", "256", "M", "512", "512" };
+	int num_layers = sizeof(vgg16_define) / sizeof(vgg16_define[0]);
+	string* usedefine = vgg16_define;
 
-	int numblock[] = { 0, 2, 2, 4, 2 };
-	for (int i = 1; i <= 4; ++i){
-
-		int n = numblock[i];
-		for (int j = 1; j <= n; ++j){
-			x = poseConv2d(x, 3, num_output, cc::f("conv%d_%d", i, j));
-			x = L::relu(x, cc::f("relu%d_%d", i, j));
+	auto x = input;
+	int numpool = 1;
+	int numconv = 1;
+	int numchildren = 1;
+	for (int i = 0; i < num_layers; ++i){
+		if (usedefine[i] == "M"){
+			x = L::max_pooling2d(x, { 2, 2 }, { 2, 2 }, { 0, 0 }, false, cc::f("pool%d_stage1", numpool++));
+			numchildren = 1;
+			numconv++;
 		}
-
-		if (i < 4)
-			x = L::max_pooling2d(x, { 2, 2 }, { 2, 2 }, { 0, 0 }, false, cc::f("pool%d_stage1", i));
-
-		if (i < 4)
-			num_output *= 2;
+		else{
+			int num_output = atoi(usedefine[i].c_str());
+			x = _conv2d(x, 3, num_output, cc::f("conv%d_%d", numconv, numchildren));
+			x = L::relu(x, cc::f("relu%d_%d", numconv, numchildren));
+			numchildren++;
+		}
 	}
 	return x;
 }
 
-cc::Tensor pathLine(const cc::Tensor& input,
+cc::Tensor CPMHead(const cc::Tensor& input,
 	const string& convnamefmt, const string& relunamefmt, const vector<int>& numoutput, int kernelSize){
 
 	auto x = input;
@@ -57,35 +61,35 @@ cc::Tensor pathLine(const cc::Tensor& input,
 		if (i <= numoutput.size() - 2)
 			usekernelsize = kernelSize;
 		else
+			//last two layer is 1x1
 			usekernelsize = 1;
 
-		x = poseConv2d(x, usekernelsize, numoutput[i - 1], cc::f(convnamefmt.c_str(), i));
-
+		x = _conv2d(x, usekernelsize, numoutput[i - 1], cc::f(convnamefmt.c_str(), i));
 		if (i != numoutput.size())
 			x = L::relu(x, cc::f(relunamefmt.c_str(), i));
 	}
 	return x;
 }
 
-cc::Tensor pose(const cc::Tensor& input, int num_stage, int l1Output = 38, int l2Output = 19){
+cc::Tensor OpenPoseCPMVGG16(const cc::Tensor& input, int num_stage, int l1Output = 38, int l2Output = 19){
 
-	auto x = vgg(input);
-	x = poseConv2d(x, 3, 256, cc::f("conv%d_%d_CPM", 4, 3));
+	auto x = VGG16(input);
+	x = _conv2d(x, 3, 256, cc::f("conv%d_%d_CPM", 4, 3));
 	x = L::relu(x, cc::f("relu%d_%d_CPM", 4, 3));
 
-	x = poseConv2d(x, 3, 128, cc::f("conv%d_%d_CPM", 4, 4));
+	x = _conv2d(x, 3, 128, cc::f("conv%d_%d_CPM", 4, 4));
 	x = L::relu(x, cc::f("relu%d_%d_CPM", 4, 4));
 
 	auto backbone = x;
-	auto l1 = pathLine(backbone, "conv5_%d_CPM_L1", "relu5_%d_CPM_L1", { 128, 128, 128, 512, l1Output }, 3);
-	auto l2 = pathLine(backbone, "conv5_%d_CPM_L2", "relu5_%d_CPM_L2", { 128, 128, 128, 512, l2Output }, 3);
+	auto l1 = CPMHead(backbone, "conv5_%d_CPM_L1", "relu5_%d_CPM_L1", { 128, 128, 128, 512, l1Output }, 3);
+	auto l2 = CPMHead(backbone, "conv5_%d_CPM_L2", "relu5_%d_CPM_L2", { 128, 128, 128, 512, l2Output }, 3);
 	x = L::concat({ l1, l2, backbone }, 1, "concat_stage2");
 
 	for (int i = 0; i < num_stage; ++i){
 
 		int stage = i + 2;
-		auto l1 = pathLine(x, cc::f("Mconv%%d_stage%d_L1", stage), cc::f("Mrelu%%d_stage%d_L1", stage), { 128, 128, 128, 128, 128, 128, l1Output }, 7);
-		auto l2 = pathLine(x, cc::f("Mconv%%d_stage%d_L2", stage), cc::f("Mrelu%%d_stage%d_L2", stage), { 128, 128, 128, 128, 128, 128, l2Output }, 7);
+		auto l1 = CPMHead(x, cc::f("Mconv%%d_stage%d_L1", stage), cc::f("Mrelu%%d_stage%d_L1", stage), { 128, 128, 128, 128, 128, 128, l1Output }, 7);
+		auto l2 = CPMHead(x, cc::f("Mconv%%d_stage%d_L2", stage), cc::f("Mrelu%%d_stage%d_L2", stage), { 128, 128, 128, 128, 128, 128, l2Output }, 7);
 
 		if (i < num_stage - 1)
 			x = L::concat({ l1, l2, backbone }, 1, cc::f("concat_stage%d", stage + 1));
@@ -266,7 +270,7 @@ int main(){
 	cc::setGPU(0);
 	
 	auto image = L::input({ 1, 3, 688, 368 }, "image");
-	auto poseNetwork = pose(image, 5);
+	auto poseNetwork = OpenPoseCPMVGG16(image, 5);
 	auto net = cc::engine::caffe::buildNet(poseNetwork);
 	//auto net = loadNetFromPrototxt("net.prototxt");
 	//net->input_blob(0)->reshape(1, 3, 688, 368);
@@ -293,7 +297,7 @@ int main(){
 	//如果是opencv2410，或者是跟libcaffe.dll编译使用同一个opencv版本，则可以直接使用setData(0, im)
 	//否则需要用下面做法
 	//net->input_blob(0)->setData(0, im);
-	net->input_blob(0)->setData(0, im.ptr<float>(0), im.size());
+	net->input_blob(0)->setData(0, CVFMat(im));
 	net->forward();
 	net->output_blob(0)->mutable_cpu_data();
 	tick = (getTickCount() - tick) / getTickFrequency() * 1000;

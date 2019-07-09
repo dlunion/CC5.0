@@ -107,7 +107,7 @@ void CPPLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
 
 template <typename Dtype>
 bool CPPLayer<Dtype>::ShareInParallel() const {
-	return true;
+	return false;
 }
 
 template <typename Dtype>

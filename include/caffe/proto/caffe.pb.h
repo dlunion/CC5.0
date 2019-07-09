@@ -4164,6 +4164,13 @@ class SolverParameter : public ::google::protobuf::Message /* @@protoc_insertion
   bool show_realtime_loss() const;
   void set_show_realtime_loss(bool value);
 
+  // optional float one_epoch_iter_size = 47 [default = 0];
+  bool has_one_epoch_iter_size() const;
+  void clear_one_epoch_iter_size();
+  static const int kOneEpochIterSizeFieldNumber = 47;
+  float one_epoch_iter_size() const;
+  void set_one_epoch_iter_size(float value);
+
   // optional float momentum2 = 39 [default = 0.999];
   bool has_momentum2() const;
   void clear_momentum2();
@@ -4330,6 +4337,8 @@ class SolverParameter : public ::google::protobuf::Message /* @@protoc_insertion
   void clear_has_save_loss();
   void set_has_show_realtime_loss();
   void clear_has_show_realtime_loss();
+  void set_has_one_epoch_iter_size();
+  void clear_has_one_epoch_iter_size();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<2> _has_bits_;
@@ -4371,6 +4380,7 @@ class SolverParameter : public ::google::protobuf::Message /* @@protoc_insertion
   bool debug_info_;
   int solver_type_;
   bool show_realtime_loss_;
+  float one_epoch_iter_size_;
   float momentum2_;
   ::google::protobuf::int64 random_seed_;
   int solver_mode_;
@@ -22889,13 +22899,13 @@ inline void SolverParameter::set_test_compute_loss(bool value) {
 
 // optional bool test_initialization = 32 [default = true];
 inline bool SolverParameter::has_test_initialization() const {
-  return (_has_bits_[1] & 0x00000004u) != 0;
+  return (_has_bits_[1] & 0x00000008u) != 0;
 }
 inline void SolverParameter::set_has_test_initialization() {
-  _has_bits_[1] |= 0x00000004u;
+  _has_bits_[1] |= 0x00000008u;
 }
 inline void SolverParameter::clear_has_test_initialization() {
-  _has_bits_[1] &= ~0x00000004u;
+  _has_bits_[1] &= ~0x00000008u;
 }
 inline void SolverParameter::clear_test_initialization() {
   test_initialization_ = true;
@@ -22961,13 +22971,13 @@ inline void SolverParameter::set_display(::google::protobuf::int32 value) {
 
 // optional int32 average_loss = 33 [default = 1];
 inline bool SolverParameter::has_average_loss() const {
-  return (_has_bits_[1] & 0x00000001u) != 0;
+  return (_has_bits_[1] & 0x00000002u) != 0;
 }
 inline void SolverParameter::set_has_average_loss() {
-  _has_bits_[1] |= 0x00000001u;
+  _has_bits_[1] |= 0x00000002u;
 }
 inline void SolverParameter::clear_has_average_loss() {
-  _has_bits_[1] &= ~0x00000001u;
+  _has_bits_[1] &= ~0x00000002u;
 }
 inline void SolverParameter::clear_average_loss() {
   average_loss_ = 1;
@@ -23009,13 +23019,13 @@ inline void SolverParameter::set_max_iter(::google::protobuf::int32 value) {
 
 // optional int32 iter_size = 36 [default = 1];
 inline bool SolverParameter::has_iter_size() const {
-  return (_has_bits_[1] & 0x00000020u) != 0;
+  return (_has_bits_[1] & 0x00000040u) != 0;
 }
 inline void SolverParameter::set_has_iter_size() {
-  _has_bits_[1] |= 0x00000020u;
+  _has_bits_[1] |= 0x00000040u;
 }
 inline void SolverParameter::clear_has_iter_size() {
-  _has_bits_[1] &= ~0x00000020u;
+  _has_bits_[1] &= ~0x00000040u;
 }
 inline void SolverParameter::clear_iter_size() {
   iter_size_ = 1;
@@ -23339,13 +23349,13 @@ SolverParameter::mutable_plateau_winsize() {
 
 // optional float clip_gradients = 35 [default = -1];
 inline bool SolverParameter::has_clip_gradients() const {
-  return (_has_bits_[1] & 0x00000002u) != 0;
+  return (_has_bits_[1] & 0x00000004u) != 0;
 }
 inline void SolverParameter::set_has_clip_gradients() {
-  _has_bits_[1] |= 0x00000002u;
+  _has_bits_[1] |= 0x00000004u;
 }
 inline void SolverParameter::clear_has_clip_gradients() {
-  _has_bits_[1] &= ~0x00000002u;
+  _has_bits_[1] &= ~0x00000004u;
 }
 inline void SolverParameter::clear_clip_gradients() {
   clip_gradients_ = -1;
@@ -23474,13 +23484,13 @@ inline void SolverParameter::set_snapshot_diff(bool value) {
 
 // optional .caffe.SolverParameter.SnapshotFormat snapshot_format = 37 [default = BINARYPROTO];
 inline bool SolverParameter::has_snapshot_format() const {
-  return (_has_bits_[1] & 0x00000040u) != 0;
+  return (_has_bits_[1] & 0x00000080u) != 0;
 }
 inline void SolverParameter::set_has_snapshot_format() {
-  _has_bits_[1] |= 0x00000040u;
+  _has_bits_[1] |= 0x00000080u;
 }
 inline void SolverParameter::clear_has_snapshot_format() {
-  _has_bits_[1] &= ~0x00000040u;
+  _has_bits_[1] &= ~0x00000080u;
 }
 inline void SolverParameter::clear_snapshot_format() {
   snapshot_format_ = 1;
@@ -23499,13 +23509,13 @@ inline void SolverParameter::set_snapshot_format(::caffe::SolverParameter_Snapsh
 
 // optional .caffe.SolverParameter.SolverMode solver_mode = 17 [default = GPU];
 inline bool SolverParameter::has_solver_mode() const {
-  return (_has_bits_[0] & 0x40000000u) != 0;
+  return (_has_bits_[0] & 0x80000000u) != 0;
 }
 inline void SolverParameter::set_has_solver_mode() {
-  _has_bits_[0] |= 0x40000000u;
+  _has_bits_[0] |= 0x80000000u;
 }
 inline void SolverParameter::clear_has_solver_mode() {
-  _has_bits_[0] &= ~0x40000000u;
+  _has_bits_[0] &= ~0x80000000u;
 }
 inline void SolverParameter::clear_solver_mode() {
   solver_mode_ = 1;
@@ -23548,13 +23558,13 @@ inline void SolverParameter::set_device_id(::google::protobuf::int32 value) {
 
 // optional int64 random_seed = 20 [default = -1];
 inline bool SolverParameter::has_random_seed() const {
-  return (_has_bits_[0] & 0x20000000u) != 0;
+  return (_has_bits_[0] & 0x40000000u) != 0;
 }
 inline void SolverParameter::set_has_random_seed() {
-  _has_bits_[0] |= 0x20000000u;
+  _has_bits_[0] |= 0x40000000u;
 }
 inline void SolverParameter::clear_has_random_seed() {
-  _has_bits_[0] &= ~0x20000000u;
+  _has_bits_[0] &= ~0x40000000u;
 }
 inline void SolverParameter::clear_random_seed() {
   random_seed_ = GOOGLE_LONGLONG(-1);
@@ -23635,13 +23645,13 @@ inline void SolverParameter::set_allocated_type(::std::string* type) {
 
 // optional float delta = 31 [default = 1e-008];
 inline bool SolverParameter::has_delta() const {
-  return (_has_bits_[0] & 0x80000000u) != 0;
+  return (_has_bits_[1] & 0x00000001u) != 0;
 }
 inline void SolverParameter::set_has_delta() {
-  _has_bits_[0] |= 0x80000000u;
+  _has_bits_[1] |= 0x00000001u;
 }
 inline void SolverParameter::clear_has_delta() {
-  _has_bits_[0] &= ~0x80000000u;
+  _has_bits_[1] &= ~0x00000001u;
 }
 inline void SolverParameter::clear_delta() {
   delta_ = 1e-008f;
@@ -23659,13 +23669,13 @@ inline void SolverParameter::set_delta(float value) {
 
 // optional float momentum2 = 39 [default = 0.999];
 inline bool SolverParameter::has_momentum2() const {
-  return (_has_bits_[0] & 0x10000000u) != 0;
+  return (_has_bits_[0] & 0x20000000u) != 0;
 }
 inline void SolverParameter::set_has_momentum2() {
-  _has_bits_[0] |= 0x10000000u;
+  _has_bits_[0] |= 0x20000000u;
 }
 inline void SolverParameter::clear_has_momentum2() {
-  _has_bits_[0] &= ~0x10000000u;
+  _has_bits_[0] &= ~0x20000000u;
 }
 inline void SolverParameter::clear_momentum2() {
   momentum2_ = 0.999f;
@@ -23683,13 +23693,13 @@ inline void SolverParameter::set_momentum2(float value) {
 
 // optional float rms_decay = 38 [default = 0.99];
 inline bool SolverParameter::has_rms_decay() const {
-  return (_has_bits_[1] & 0x00000080u) != 0;
+  return (_has_bits_[1] & 0x00000100u) != 0;
 }
 inline void SolverParameter::set_has_rms_decay() {
-  _has_bits_[1] |= 0x00000080u;
+  _has_bits_[1] |= 0x00000100u;
 }
 inline void SolverParameter::clear_has_rms_decay() {
-  _has_bits_[1] &= ~0x00000080u;
+  _has_bits_[1] &= ~0x00000100u;
 }
 inline void SolverParameter::clear_rms_decay() {
   rms_decay_ = 0.99f;
@@ -23731,13 +23741,13 @@ inline void SolverParameter::set_debug_info(bool value) {
 
 // optional bool snapshot_after_train = 28 [default = true];
 inline bool SolverParameter::has_snapshot_after_train() const {
-  return (_has_bits_[1] & 0x00000008u) != 0;
+  return (_has_bits_[1] & 0x00000010u) != 0;
 }
 inline void SolverParameter::set_has_snapshot_after_train() {
-  _has_bits_[1] |= 0x00000008u;
+  _has_bits_[1] |= 0x00000010u;
 }
 inline void SolverParameter::clear_has_snapshot_after_train() {
-  _has_bits_[1] &= ~0x00000008u;
+  _has_bits_[1] &= ~0x00000010u;
 }
 inline void SolverParameter::clear_snapshot_after_train() {
   snapshot_after_train_ = true;
@@ -23780,13 +23790,13 @@ inline void SolverParameter::set_solver_type(::caffe::SolverParameter_SolverType
 
 // optional bool save_loss = 45 [default = true];
 inline bool SolverParameter::has_save_loss() const {
-  return (_has_bits_[1] & 0x00000010u) != 0;
+  return (_has_bits_[1] & 0x00000020u) != 0;
 }
 inline void SolverParameter::set_has_save_loss() {
-  _has_bits_[1] |= 0x00000010u;
+  _has_bits_[1] |= 0x00000020u;
 }
 inline void SolverParameter::clear_has_save_loss() {
-  _has_bits_[1] &= ~0x00000010u;
+  _has_bits_[1] &= ~0x00000020u;
 }
 inline void SolverParameter::clear_save_loss() {
   save_loss_ = true;
@@ -23824,6 +23834,30 @@ inline void SolverParameter::set_show_realtime_loss(bool value) {
   set_has_show_realtime_loss();
   show_realtime_loss_ = value;
   // @@protoc_insertion_point(field_set:caffe.SolverParameter.show_realtime_loss)
+}
+
+// optional float one_epoch_iter_size = 47 [default = 0];
+inline bool SolverParameter::has_one_epoch_iter_size() const {
+  return (_has_bits_[0] & 0x10000000u) != 0;
+}
+inline void SolverParameter::set_has_one_epoch_iter_size() {
+  _has_bits_[0] |= 0x10000000u;
+}
+inline void SolverParameter::clear_has_one_epoch_iter_size() {
+  _has_bits_[0] &= ~0x10000000u;
+}
+inline void SolverParameter::clear_one_epoch_iter_size() {
+  one_epoch_iter_size_ = 0;
+  clear_has_one_epoch_iter_size();
+}
+inline float SolverParameter::one_epoch_iter_size() const {
+  // @@protoc_insertion_point(field_get:caffe.SolverParameter.one_epoch_iter_size)
+  return one_epoch_iter_size_;
+}
+inline void SolverParameter::set_one_epoch_iter_size(float value) {
+  set_has_one_epoch_iter_size();
+  one_epoch_iter_size_ = value;
+  // @@protoc_insertion_point(field_set:caffe.SolverParameter.one_epoch_iter_size)
 }
 
 // -------------------------------------------------------------------

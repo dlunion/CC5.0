@@ -1,0 +1,441 @@
+
+
+<html>
+<head>
+
+<title>Caffeboard</title>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static/logo.png">
+<script src="/static/js/jquery-3.1.1.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/socket.io.js"></script>
+<script src="/static/js/vue.js"></script>
+<script src="/static/js/layer.js"></script>
+<script src="/static/js/g2.js"></script>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+
+<script type="text/javascript">
+  layer.config({path: '/static/js'});
+</script>
+
+<script src="/static/js/common.js"></script>
+<script src="/static/js/ajax-echo.js"></script>
+
+<style>
+#container>div{
+    display: block;
+    margin-top: 10px;
+}
+
+.layui-layer-title{
+    border-bottom: none;
+    border-radius: none;
+    background-color: #eee;
+    color: #555; 
+}
+
+.layui-layer-rim{
+    border: 6px solid hsla(0, 0%, 0%, 0.1);
+}
+
+.layui-layer-content{
+    overflow: hidden;
+    background-size:100% 100%;
+}
+
+.action-button{
+  display: inline-block;
+  margin: 10px;
+}
+
+body{
+    margin: 50px;
+    background-color: #aaa;
+}
+
+.Blob>img{
+    width: 100%;
+    height: 100%;
+}
+</style>
+
+</head>
+<body>
+
+<div id="c1">
+</div>
+
+<div style="display: none" id="vue-container">
+  <div class="operator-plane">
+    <div style="padding: 30px" class="container-body">
+      <div class="buttons">
+        <div v-for="(item, index) in config.actions" class="action-button"><button type="button" @click="actionClick(item)" class="btn" v-bind:class="item.style">{[item.title]}</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-plane">
+    <div style="padding: 30px" class="container-body">
+      <span v-for="item in status">{[item.name]} : {[item.value]}<br/></span>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+function tokx(value){
+    var p = Math.floor(Math.log(value)/Math.LN10);
+    var n = value * Math.pow(10, -p) ;
+    n = n + "";
+    if(n.length > 7)
+        n = n.substring(0, 7);
+    return n + 'e' + p;
+}
+
+function openGIST(name){
+  openURL("/netscope#/gist/" + name);
+}
+
+function openFullLogs(){
+  openURL("/logs/full"); 
+}
+
+//显示图表，或者更新显示
+function showOrUpdateLineChart(cols, data, store){
+
+  if(store.g2chart != undefined){
+    store.g2frame = new G2.Frame(data);
+    store.g2frame = G2.Frame.combinColumns(store.g2frame, cols, 'value', 'chart', 'iter'); 
+    store.g2chart.changeData(store.g2frame);
+    return;
+  }
+
+  store.g2frame = new G2.Frame(data);
+  store.g2frame = G2.Frame.combinColumns(store.g2frame, cols, 'value', 'chart', 'iter'); 
+  store.g2chart = new G2.Chart({
+    id: store.idd,
+    forceFit: true,
+    height: 450,
+    plotCfg: {
+      margin: [20, 20, 100, 80]
+    }
+  });
+  store.g2chart.source(store.g2frame, {
+    iter: {
+      alias: 'Daily fat intake', // 定义别名
+      tickCount: 20, // 自定义刻度间距
+      nice: false, // 不对最大最小值优化
+      //formatter: function(value){
+      //  return "iter" + value;
+      //}
+    },
+    value: {
+      alias: 'Value'
+    }
+  });
+  store.g2chart.legend({
+    position: 'bottom'
+  });
+  store.g2chart.axis('iter', {
+    line: null,
+    tickLine: {
+      stroke: '#000',
+      value: 6 // 刻度线长度
+    },
+    title: null
+  });
+  store.g2chart.axis('value', {
+    tickLine: {
+      stroke: '#000',
+      value: 6 // 刻度线长度
+    },
+    labels: {
+      label: {
+        fill: '#000'
+      }
+    },
+    line: {
+      stroke: '#000'
+    },
+    grid: null
+  });
+  store.g2chart.line().position('iter*value').color('chart', ['#1f77b4', '#ff7f0e', '#2ca02c']).shape('spline').size(2);
+  store.g2chart.render();
+}
+
+function newWindow(opt){
+
+  var resizeFunc = function(layero){
+      if(opt.resizing == undefined || opt.resizing(layero)){
+        var content = layero.find(".layui-layer-content");
+        var parent = layero;
+        var title = parent.find(".layui-layer-title");
+        content.height(parent.height() - title.height());
+      }
+  };
+
+  //content, title, area, success, resizing
+  layer.open({
+    type: 1,
+    title: opt.title,
+    shade: false,
+    moveOut: true,
+    closeBtn: 0,
+    resize: true,
+    skin: 'layui-layer-rim',
+    area: opt.area,
+    maxmin: true,
+    offset: [Math.random() * 500, Math.random() * 1000],
+    content: opt.content,
+    zIndex: layer.zIndex,
+    resizing: resizeFunc,
+    full: function(layero){
+      resizeFunc(layero);
+    },
+    restore: function(layero){
+      resizeFunc(layero);
+    },
+    success: function(layero){
+      layer.setTop(layero);
+      layero.resizeFunc = resizeFunc;
+
+      if(opt.success == undefined || opt.success(layero)){
+        var parent = layero;
+        var title = parent.find(".layui-layer-title");
+        var content = layero.find(".layui-layer-content");
+        content.height(parent.height() - title.height());
+      }
+    }
+  });
+}
+
+var window_map = {};
+var action_plane = {};
+var chart_map = {};
+var global_chart_id = 0;
+
+function genNewChartHtml(){
+  var idd = "_chart_" + global_chart_id;
+  var html = '<div style="padding: 30px" class="container-body" id="' + idd + '"></div>';
+  global_chart_id++;
+  return [html, idd];
+}
+
+function showChart(key, item){
+
+  if(!(key in chart_map)){
+
+    var chartLayout = genNewChartHtml();
+    var body = chartLayout[0];
+    var idd = chartLayout[1];
+
+    newWindow({
+      title: key,
+      area: [1000, 570],
+      content: body,
+      success: function(layero){
+        chart_map[key] = {window: layero, idd: idd};
+        return false;
+      }
+    });
+  }
+
+  var g2data = {};
+  var g2cols = {};
+  g2data[key] = [];
+  g2cols[key] = {};
+
+  var g2datamap = {};
+  for(var itemName in item.items){
+    g2cols[key][itemName] = 1;
+
+    var subitem = item.items[itemName];
+    for(var k = 0; k < subitem.length; ++k){
+      var time = subitem[k][0];
+      var value = subitem[k][1];
+      if(g2datamap[time] == undefined)
+        g2datamap[time] = {};
+      g2datamap[time][itemName] = value;
+    }
+  }
+
+  if(Object.keys(g2datamap).length > 0){
+    for(var k in g2datamap){
+      var item = g2datamap[k];
+      item["iter"] = k;
+      g2data[key].push(item);
+    }
+
+    var cols = [];
+    for(var k in g2cols[key])
+      cols.push(k);
+    
+    showOrUpdateLineChart(cols, g2data[key], chart_map[key]);
+  }
+}
+
+var status_plane = {};
+function showOrUpdateStatus(statusItems){
+  if(status_plane.window == undefined){
+      newWindow({
+        title: "状态面板",
+        area: [505, 350],
+        content: $("#vue-container>.status-plane").html(),
+        success: function(layero){
+          status_plane.window = layero;
+          status_plane.datastore = {};
+          status_plane.vuecontainer = new Vue({
+            delimiters: ['{[', ']}'],
+            el: layero.find(".container-body")[0],
+            data: {
+              "status": []
+            }
+          });
+          return true;
+        }
+      });
+  }
+
+  for(var key in statusItems)
+    status_plane.datastore[key] = statusItems[key];
+  
+  var status = [];
+  for(var key in status_plane.datastore)
+    status.push({"name": key, "value": status_plane.datastore[key]});
+  status_plane.vuecontainer.status = status;
+}
+
+function responseUpdate(msg){
+
+  for(var key in msg){
+      var item = msg[key];
+      if(item.type == "chartValue")
+        showChart(key, item);
+  }
+
+  var statusItems = [];
+  for(var key in msg){
+      var item = msg[key];
+      if(item.type == "status")
+        statusItems[key] = item["value"];
+  }
+
+  if(Object.keys(statusItems).length > 0){
+    showOrUpdateStatus(statusItems);
+  }
+
+  for(var key in msg){
+      var item = msg[key];
+      var openOrUpdateImage = function(item){
+          if(!(key in window_map)){
+              var scale = item.type == "image" ? 1 : (item.rows < 200 ? 3 : 1);
+              newWindow({
+                title: key,
+                area: [item.cols * scale, item.rows * scale + 42],
+                success: function(layero){
+                  window_map[key] = layero;
+                  return true;
+                }
+              });
+          }
+          var subcontainer = window_map[key].find(".layui-layer-content");
+          subcontainer.css("background-image", "url(" + item[item.type] + ")");
+      };
+
+      if(item.type == "blob"){
+          openOrUpdateImage(item);
+      }else if(item.type == "image"){
+          openOrUpdateImage(item);
+      }else if(item.type == "string"){
+          if(!(key in window_map)){
+              newWindow({
+                title: key,
+                area: [1000, 300],
+                content: "<span class='string-output'></span>",
+                success: function(layero){
+                  window_map[key] = layero;
+                   var content = layero.find(".layui-layer-content");
+                  content.css("background-color", "#000");
+                  content.css("color", "#fff");
+                  content.css("padding", "10px");
+                  return false;
+                },
+                resizing: function(layero){
+                  var parent = layero;
+                  var title = parent.find(".layui-layer-title");
+                  content.height(parent.height() - title.height() - 10 * 2);
+                  return false;
+                }
+              });
+          }
+          var subcontainer = window_map[key].find(".string-output");
+          var string_content = "";
+          for(var i = 0; i < item.value.length; ++i){
+            string_content = string_content + item.value[i] + "<br/>";
+          }
+
+          subcontainer.html(string_content);
+          var content = window_map[key].find(".layui-layer-content");
+          content[0].scrollTop = content[0].scrollHeight;
+      }
+    }
+}
+
+$(document).ready(function(){
+
+    var socket = io.connect('/listener');
+    socket.on("notifyConfig", function(msg){
+
+      if(action_plane.window == undefined){
+        newWindow({
+          title: "控制面板",
+          area: [505, 350],
+          content: $("#vue-container>.operator-plane").html(),
+          success: function(layero){
+            action_plane.window = layero;
+            action_plane.vuecontainer = new Vue({
+              delimiters: ['{[', ']}'],
+              el: layero.find(".container-body")[0],
+              data: {
+                "config": {}
+              },
+              methods: {
+                actionClick: function(op){
+                  if(op.type == "code"){
+                    eval(op.action);
+                  }else{
+                    echo("/notify")
+                    .data(op)
+                    .succ(function(d){
+                        layer.msg(op.title, {
+                          zIndex: layer.zIndex,
+                          offset: "b",
+                          success: function(layero){
+                            layer.setTop(layero);
+                          }
+                        });
+                    })
+                    .post();
+                  }
+                }
+              }
+            });
+            return true;
+          }
+        });
+      }
+      action_plane.vuecontainer.config = msg;
+    });
+
+    //cycleUpdate();
+    socket.on('responseUpdate', function(msg) {
+      responseUpdate(msg);
+    });
+
+    setInterval(function(){
+       socket.emit('getUpdate');
+     }, 500);
+});
+</script>
+</body>
+</html>

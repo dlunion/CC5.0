@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestCaffeboard", "测试caffeboard.vcxproj", "{1ABC0321-C2BC-4ACF-BB23-008D71F8D538}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		DebugDLL|x64 = DebugDLL|x64
+		ReleaseDLL|x64 = ReleaseDLL|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1ABC0321-C2BC-4ACF-BB23-008D71F8D538}.DebugDLL|x64.ActiveCfg = DebugDLL|x64
+		{1ABC0321-C2BC-4ACF-BB23-008D71F8D538}.DebugDLL|x64.Build.0 = DebugDLL|x64
+		{1ABC0321-C2BC-4ACF-BB23-008D71F8D538}.ReleaseDLL|x64.ActiveCfg = ReleaseDLL|x64
+		{1ABC0321-C2BC-4ACF-BB23-008D71F8D538}.ReleaseDLL|x64.Build.0 = ReleaseDLL|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -5,6 +5,7 @@
 #include "caffe/sgd_solvers.hpp"
 #include "caffe/util/io.hpp"
 #include "caffe/util/upgrade_proto.hpp"
+#include "caffe/cc/core/cc_v5.h"
 
 namespace caffe {
 
@@ -26,6 +27,15 @@ namespace caffe {
 template <typename Dtype>
 Dtype SGDSolver<Dtype>::GetLearningRate() {
   Dtype rate;
+
+  if (this->ccSolver()){
+
+	  cc::Solver* solver = this->ccSolver();
+	  if (solver->getLearningRatePolicyFunction()){
+		  return solver->getLearningRatePolicyFunction()(solver, this->iter_, this->param_.stepsize(), solver->getLearningRatePolicyFunctionUserData());
+	  }
+  }
+
   const string& lr_policy = this->param_.lr_policy();
   if (lr_policy == "fixed") {
     rate = this->param_.base_lr();
@@ -52,10 +62,22 @@ Dtype SGDSolver<Dtype>::GetLearningRate() {
     rate = this->param_.base_lr() * pow(Dtype(1.) -
         (Dtype(this->iter_) / Dtype(this->param_.max_iter())),
         this->param_.power());
-  } else if (lr_policy == "sigmoid") {
-    rate = this->param_.base_lr() * (Dtype(1.) /
-        (Dtype(1.) + exp(-this->param_.gamma() * (Dtype(this->iter_) -
-          Dtype(this->param_.stepsize())))));
+  }
+  else if (lr_policy == "sigmoid") {
+	  rate = this->param_.base_lr() * (Dtype(1.) /
+		  (Dtype(1.) + exp(-this->param_.gamma() * (Dtype(this->iter_) -
+		  Dtype(this->param_.stepsize())))));
+  }
+  else if (lr_policy == "pose"){
+	  rate = this->param_.base_lr() *
+		  pow(Dtype(1) + this->param_.gamma() * this->iter_,
+		  -this->param_.power());
+
+	  int iter_num = this->iter_;
+
+	  if (iter_num <= 1300){
+		  rate *= (iter_num / 100 + 1) * 0.1;
+	  }
   } else if (lr_policy == "plateau") {
     // Update minimum loss if needed
     if (this->smoothed_loss_ < this->minimum_loss_) {

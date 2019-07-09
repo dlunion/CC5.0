@@ -145,14 +145,19 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
           << "either 0 or bottom_size times ";
     }
 	if (share_from_root && root_net_) {
-      //LOG(INFO) << "Sharing layer " << layer_param.name() << " from root net";
+		if (phase_ == PhaseTrain){
+			LOG(INFO) << "Sharing layer " << layer_param.name() << " from root net";
+		}
       layers_.push_back(root_net_->layers_[layer_id]);
       layers_[layer_id]->SetShared(true);
     } else {
       layers_.push_back(LayerRegistry<Dtype>::CreateLayer(layer_param));
     }
     layer_names_.push_back(layer_param.name());
-    //LOG_IF(INFO, Caffe::root_solver()) << "Creating Layer " << layer_param.name();
+
+	if (phase_ == PhaseTrain){
+		LOG_IF(INFO, Caffe::root_solver()) << "Creating Layer " << layer_param.name();
+	}
     bool need_backward = false;
 
     // Figure out this layer's input and output
@@ -194,20 +199,32 @@ void Net<Dtype>::Init(const NetParameter& in_param) {
       const vector<Blob<Dtype>*>& this_top = this->top_vecs_[layer_id];
       for (int top_id = 0; top_id < base_top.size(); ++top_id) {
         this_top[top_id]->ReshapeLike(*base_top[top_id]);
-        //LOG(INFO) << "Created top blob " << top_id << " (shape: " << this_top[top_id]->shape_string() <<  ") for shared layer " << layer_param.name();
+
+		if (phase_ == PhaseTrain){
+			LOG(INFO) << "Created top blob " << top_id << " (shape: " << this_top[top_id]->shape_string() << ") for shared layer " << layer_param.name();
+		}
       }
     } else {
       layers_[layer_id]->SetUp(bottom_vecs_[layer_id], top_vecs_[layer_id]);
     }
-    //LOG_IF(INFO, Caffe::root_solver()) << "Setting up " << layer_names_[layer_id];
+
+	//if (phase_ == PhaseTrain){
+	//	LOG_IF(INFO, Caffe::root_solver()) << "Setting up " << layer_names_[layer_id];
+	//}
     for (int top_id = 0; top_id < top_vecs_[layer_id].size(); ++top_id) {
       if (blob_loss_weights_.size() <= top_id_vecs_[layer_id][top_id]) {
         blob_loss_weights_.resize(top_id_vecs_[layer_id][top_id] + 1, Dtype(0));
       }
       blob_loss_weights_[top_id_vecs_[layer_id][top_id]] = layer->loss(top_id);
-      //LOG_IF(INFO, Caffe::root_solver()) << "Top shape: " << top_vecs_[layer_id][top_id]->shape_string();
+
+	  if (phase_ == PhaseTrain){
+		  LOG_IF(INFO, Caffe::root_solver()) << "Top shape: " << top_vecs_[layer_id][top_id]->shape_string();
+	  }
+
       if (layer->loss(top_id)) {
-        //LOG_IF(INFO, Caffe::root_solver()) << "    with loss weight " << layer->loss(top_id);
+		  if (phase_ == PhaseTrain){
+			 LOG_IF(INFO, Caffe::root_solver()) << "    with loss weight " << layer->loss(top_id);
+		  }
       }
       memory_used_ += top_vecs_[layer_id][top_id]->count();
     }
@@ -437,7 +454,9 @@ void Net<Dtype>::AppendTop(const NetParameter& param, const int layer_id,
   if (blob_name_to_idx && layer_param->bottom_size() > top_id &&
       blob_name == layer_param->bottom(top_id)) {
     // In-place computation
-    //LOG_IF(INFO, Caffe::root_solver()) << layer_param->name() << " -> " << blob_name << " (in-place)";
+	  if (this->phase_ == PhaseTrain){
+		  LOG_IF(INFO, Caffe::root_solver()) << layer_param->name() << " -> " << blob_name << " (in-place)";
+	  }
     top_vecs_[layer_id].push_back(blobs_[(*blob_name_to_idx)[blob_name]].get());
     top_id_vecs_[layer_id].push_back((*blob_name_to_idx)[blob_name]);
   } else if (blob_name_to_idx &&
@@ -449,7 +468,9 @@ void Net<Dtype>::AppendTop(const NetParameter& param, const int layer_id,
   } else {
     // Normal output.
     if (Caffe::root_solver()) {
-      //LOG(INFO) << layer_param->name() << " -> " << blob_name;
+		if (this->phase_ == PhaseTrain){
+			LOG(INFO) << layer_param->name() << " -> " << blob_name;
+		}
     }
     shared_ptr<Blob<Dtype> > blob_pointer(new Blob<Dtype>());
     const int blob_id = blobs_.size();
@@ -475,7 +496,9 @@ int Net<Dtype>::AppendBottom(const NetParameter& param, const int layer_id,
                << layer_param.name() << "', bottom index " << bottom_id << ")";
   }
   const int blob_id = (*blob_name_to_idx)[blob_name];
-  //LOG_IF(INFO, Caffe::root_solver()) << layer_names_[layer_id] << " <- " << blob_name;
+  if (this->phase_ == PhaseTrain){
+	  LOG_IF(INFO, Caffe::root_solver()) << layer_names_[layer_id] << " <- " << blob_name;
+  }
   bottom_vecs_[layer_id].push_back(blobs_[blob_id].get());
   bottom_id_vecs_[layer_id].push_back(blob_id);
   available_blobs->erase(blob_name);

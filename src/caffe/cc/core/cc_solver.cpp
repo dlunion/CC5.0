@@ -68,12 +68,11 @@ namespace cc{
 	}
 
 	Solver::Solver(){
-		static caffe::SignalHandler singalHandler(
-			caffe::SolverAction::STOP,
-			caffe::SolverAction::SNAPSHOT);
-		this->signalHandler_ = &singalHandler;
+		this->signalHandler_ = nullptr;
 		this->stepEndCallback_ = nullptr;
+		this->learningRatePolicyFunction_ = nullptr;
 		this->stepEndCallbackUserData_ = nullptr;
+		this->learningRatePolicyUserData_ = nullptr;
 	}
 
 	void Solver::setBaseLearningRate(float rate){
@@ -106,6 +105,20 @@ namespace cc{
 	
 	TrainStepEndCallback Solver::getStepEndCallback(){
 		return this->stepEndCallback_;
+	}
+
+	LearningRatePolicyFunction Solver::getLearningRatePolicyFunction(){
+		return this->learningRatePolicyFunction_;
+	}
+
+	void* Solver::getLearningRatePolicyFunctionUserData(){
+		return this->learningRatePolicyUserData_;
+	}
+
+	void Solver::setLearningRatePolicyFunction(LearningRatePolicyFunction callback, void* userdata){
+
+		this->learningRatePolicyFunction_ = callback;
+		this->learningRatePolicyUserData_ = userdata;
 	}
 
 	static Solver* buildSolver(caffe::SolverParameter& solver_param){
@@ -157,6 +170,11 @@ namespace cc{
 	}
 
 	void Solver::installActionSignalOperator(){
+
+		static caffe::SignalHandler singalHandler(
+			caffe::SolverAction::STOP,
+			caffe::SolverAction::SNAPSHOT);
+		this->signalHandler_ = &singalHandler;
 		ptr->SetActionFunction(((caffe::SignalHandler*)this->signalHandler_)->GetActionFunction());
 	}
 
@@ -197,7 +215,7 @@ namespace cc{
 
 	void Solver::solve(int numGPU, int* gpuid){
 
-		installActionSignalOperator();
+		//installActionSignalOperator();
 
 		if (numGPU < 2){
 

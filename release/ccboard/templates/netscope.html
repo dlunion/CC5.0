@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>NetScope</title>
+    <link rel="shortcut icon" href="/static/logo.png">
+    <link rel="stylesheet" href="/static/caffenet/assets/css/css.css?family=Roboto:400,300">
+    <link rel="stylesheet" href="/static/caffenet/assets/css/tooltip.css">
+    <link rel="stylesheet" href="/static/caffenet/assets/css/codemirror.css">
+    <link rel="stylesheet" href="/static/caffenet/assets/css/netscope.css">
+    <script src="/static/caffenet/assets/js/lib/lodash.min.js"></script>
+    <script src="/static/caffenet/assets/js/lib/jquery.min.js"></script>
+    <script src="/static/caffenet/assets/js/lib/jquery.qtip.min.js"></script>
+    <script src="/static/caffenet/assets/js/lib/d3.min.js"></script>
+    <script src="/static/caffenet/assets/js/lib/dagre-d3.min.js"></script>
+    <script src="/static/caffenet/assets/js/lib/director.min.js"></script>
+    <script src="/static/caffenet/assets/js/lib/codemirror.min.js"></script>
+    <script src="/static/caffenet/assets/js/netscope_2.js"></script>
+    
+    <script type="text/javascript" src="static/js/common.js"></script>
+	<script type="text/javascript" src="static/js/ajax-echo.js"></script>
+	<script type="text/javascript" src="static/js/layer.js"  merge="true"></script>
+	<script>
+        layer.config({path: '/static/js'});
+	</script>
+</head>
+<body>
+
+<div id="master-container">
+    <div id='net-column' class="column">
+        <div id="net-spinner">
+            <img src="/static/caffenet/assets/img/loading.svg" title="Loading network..." />
+        </div>
+        <div id="net-error" style="display:none">
+            <div class="title">Error Encountered</div>
+            <div class="msg"></div>
+        </div>
+        <div id="net-warning" style="display:none">
+            <div class="title">Warning</div>
+            <div class="msg"></div>
+        </div>
+        <div id="net-container">
+            <div id="net-group">
+                <h1 id="net-title"></h1>
+                <svg id="net-svg"></svg>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -391,6 +391,7 @@ message SolverParameter {
 
   //show realtime loss information
   optional bool show_realtime_loss = 46 [default = false];
+  optional float one_epoch_iter_size = 47 [default = 0];
 }
 
 // A message that stores the solver snapshots

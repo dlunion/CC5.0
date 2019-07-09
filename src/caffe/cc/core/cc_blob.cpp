@@ -1,10 +1,11 @@
 
-
+#include <opencv.hpp>
 #include "caffe/cc/core/cc_v5.h"
 #include "caffe/blob.hpp"
 #include <vector>
 #include "caffe/util/math_functions.hpp"
 using namespace std;
+using namespace cv;
 
 namespace cc{
 
@@ -47,15 +48,17 @@ namespace cc{
 		this->_num_axis = this->num_axes();
 	}
 
-	CCAPI std::shared_ptr<Blob> CCCALL Blob::transpose(int axis0, int axis1, int axis2, int axis3){
+	CCAPI void CCCALL Blob::transpose(int axis0, int axis1, int axis2, int axis3){
 
 		int muls[] = { count(1), count(2), count(3), 1 };
-		auto t = newBlobByShape(_dims[axis0], _dims[axis1], _dims[axis2], _dims[axis3]);
-		float* dataptr = t->mutable_cpu_data();
+		//auto t = newBlobByShape(_dims[axis0], _dims[axis1], _dims[axis2], _dims[axis3]);
+		BlobData temp;
+		temp.reshape(_dims[axis0], _dims[axis1], _dims[axis2], _dims[axis3]);
+		float* dataptr = temp.list;
 		const float* srcptr = this->cpu_data();
-		int tcount1 = t->count(1);
-		int tcount2 = t->count(2);
-		int tcount3 = t->count(3);
+		int tcount1 = temp.count(1);
+		int tcount2 = temp.count(2);
+		int tcount3 = temp.count(3);
 
 		for (int a0 = 0; a0 < _dims[axis0]; ++a0){
 			for (int a1 = 0; a1 < _dims[axis1]; ++a1){
@@ -64,22 +67,52 @@ namespace cc{
 						dataptr[a0 * tcount1 + a1 * tcount2 + a2 * tcount3 + a3] = srcptr[a0 * muls[axis0] + a1 * muls[axis1] + a2 * muls[axis2] + a3 * muls[axis3]];
 			}
 		}
-		return t;
+		this->copyFrom(&temp);
 	}
 
-	void Blob::setData(int numIndex, const uchar* imdataptr, cv::Size imsize, int channels, const Scalar& meanValue, float scale){
+	void blobsetData(Blob* blob, int numIndex, const Mat& data, const Scalar& meanValue, float scale){
+		CHECK(!data.empty()) << "data is empty";
+		CHECK_EQ(data.channels(), blob->channel()) << "data channel error";
 
-		Mat im(imsize, CV_8UC(channels), (uchar*)imdataptr);
-		setData(numIndex, im, meanValue, scale);
+		int w = blob->width();
+		int h = blob->height();
+		Mat udata = data;
+		if (udata.size() != cv::Size(w, h))
+			resize(udata, udata, cv::Size(w, h));
+
+		if (CV_MAT_DEPTH(udata.type()) != CV_32F)
+			udata.convertTo(udata, CV_32F);
+
+		if (meanValue[0] != 0 || meanValue[1] != 0 || meanValue[2] != 0)
+			udata -= meanValue;
+
+		if (scale != 1)
+			udata *= scale;
+
+		int channel_size = w*h;
+		int num_size = blob->channel() * channel_size;
+		float* input_data = blob->mutable_cpu_data() + num_size * numIndex;
+		vector<cv::Mat> mats(data.channels());
+		for (int i = 0; i < mats.size(); ++i)
+			mats[i] = cv::Mat(h, w, CV_32F, input_data + channel_size * i);
+
+		split(udata, mats);
+		CHECK_EQ((float*)mats[0].data, input_data) << "error, split pointer fail.";
 	}
 
-	void Blob::setData(int numIndex, const float* imdataptr, cv::Size imsize, int channels, const Scalar& meanValue, float scale){
+	void Blob::setData(int numIndex, const unsigned char* imdataptr, int width, int height, int channels, const CCScalar& meanValue, float scale){
 
-		Mat im(imsize, CV_32FC(channels), (uchar*)imdataptr);
-		setData(numIndex, im, meanValue, scale);
+		Mat im(height, width, CV_8UC(channels), (uchar*)imdataptr);
+		blobsetData(this, numIndex, im, CCScal(meanValue), scale);
 	}
 
-	bool Blob::setData(int numIndex, const void* imdataptr, int datalength, int color, const Scalar& meanValue, float scale){
+	void Blob::setData(int numIndex, const float* imdataptr, int width, int height, int channels, const CCScalar& meanValue, float scale){
+
+		Mat im(height, width, CV_32FC(channels), (uchar*)imdataptr);
+		blobsetData(this, numIndex, im, CCScal(meanValue), scale);
+	}
+
+	bool Blob::setData(int numIndex, const void* imdataptr, int datalength, int color, const CCScalar& meanValue, float scale){
 
 		Mat im;
 		try{
@@ -89,10 +122,11 @@ namespace cc{
 		if (im.empty())
 			return false;
 
-		setData(numIndex, im, meanValue, scale);
+		blobsetData(this, numIndex, im, CCScal(meanValue), scale);
 		return true;
 	}
 
+#if 0
 	void Blob::setData(int numIndex, const Mat& data, const Scalar& meanValue, float scale){
 		CHECK(!data.empty()) << "data is empty";
 		CHECK_EQ(data.channels(), this->channel()) << "data channel error";
@@ -122,9 +156,19 @@ namespace cc{
 		split(udata, mats);
 		CHECK_EQ((float*)mats[0].data, input_data) << "error, split pointer fail.";
 	}
+#endif
 
 	int Blob::shape(int index) const {
 		return ptr->shape(index);
+	}
+
+	shared_ptr<Blob> Blob::clone(bool clonediff){
+		shared_ptr<Blob> newb = newBlob();
+		newb->copyFrom(this, false, true);
+
+		if (clonediff)
+			newb->copyFrom(this, true, false);
+		return newb;
 	}
 
 	int Blob::num_axes() const {
@@ -260,11 +304,19 @@ namespace cc{
 	}
 
 	bool BlobData::empty() const{
-		return count() < 1;
+		return count() == 0;
 	}
 
-	int BlobData::count() const{
-		return num*height*width*channels;
+	int BlobData::count(int start_axis) const{
+
+		int dims[] = {num, channels, height, width};
+		start_axis = std::max(0, start_axis);
+		start_axis = std::min(3, start_axis);
+
+		int count_dims = 1;
+		for (int i = start_axis; i < 4; ++i)
+			count_dims *= dims[i];
+		return count_dims;
 	}
 
 	void BlobData::reshape(int num, int channels, int height, int width){

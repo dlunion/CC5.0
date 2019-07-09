@@ -196,13 +196,13 @@ public:
 
 			multi_padding_and_random_crop(batchImage_, 1, 1, 4, augmentResult_, CV_32FC3, 0.8);
 			for (int i = 0; i < batch_size_; ++i) {
-				image->setData(i, augmentResult_[i]);
+				image->setData(i, CVFMat(augmentResult_[i]));
 				label->mutable_cpu_data()[i] = batchLabs_[i];
 			}
 		}
 		else{
 			for (int i = 0; i < batch_size_; ++i) {
-				image->setData(i, batchImage_[i]);
+				image->setData(i, CVFMat(batchImage_[i]));
 				label->mutable_cpu_data()[i] = batchLabs_[i];
 			}
 		}
@@ -380,7 +380,7 @@ int main(){
 	op->average_loss = 1;
 	op->max_iter = trainEpochs * epochIters;
 	op->display = 10;
-	op->device_ids = { 0,1 };
+	op->device_ids = { 0 };
 	//op->reload_weights = "saved_iter[26520]_loss[0.340022]_accuracy[0.896635].caffemodel";
 	op->minimize({ loss, test });
 	//op->minimizeFromFile("net.prototxt");

@@ -1,0 +1,41 @@
+
+
+<html>
+<head>
+
+<title>Caffeboard logs</title>
+<meta charset="utf-8">
+<link rel="shortcut icon" href="/static/logo.png">
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<script src="/static/js/jquery-3.1.1.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+
+<style>
+body{
+  padding: 30px;
+}
+
+.panel-body{
+  background-color: #000;
+  color: #fff;
+  max-height: 300px;
+  overflow-y: scroll;
+}
+</style>
+
+</head>
+<body>
+<div id="content">
+  {{content}}
+</div>
+
+<script type="text/javascript">
+$(function(){
+    var content = $(".panel-body");
+    for(var i = 0; i < content.length; ++i){
+      content[i].scrollTop = content[i].scrollHeight;
+    }
+});
+</script>
+</body>
+</html>

@@ -7,13 +7,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="train.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\cc_nb.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="visualize.cpp">
+    <ClCompile Include="openpose.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -21,5 +18,10 @@
     <Library Include="..\libcaffe5.0.lib">
       <Filter>源文件</Filter>
     </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="cutest.cu">
+      <Filter>源文件</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

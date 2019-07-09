@@ -137,17 +137,17 @@ void Solver<Dtype>::InitTrainNet() {
       << "one of these fields specifying a train_net: " << field_names;
   NetParameter net_param;
   if (param_.has_train_net_param()) {
-   // LOG_IF(INFO, Caffe::root_solver())
-    //    << "Creating training net specified in train_net_param.";
+    LOG_IF(INFO, Caffe::root_solver())
+        << "Creating training net specified in train_net_param.";
     net_param.CopyFrom(param_.train_net_param());
   } else if (param_.has_train_net()) {
-    //LOG_IF(INFO, Caffe::root_solver())
-    //    << "Creating training net from train_net file: " << param_.train_net();
+    LOG_IF(INFO, Caffe::root_solver())
+        << "Creating training net from train_net file: " << param_.train_net();
     ReadNetParamsFromTextFileOrDie(param_.train_net(), &net_param);
   }
   if (param_.has_net_param()) {
-    //LOG_IF(INFO, Caffe::root_solver())
-    //    << "Creating training net specified in net_param.";
+    LOG_IF(INFO, Caffe::root_solver())
+        << "Creating training net specified in net_param.";
     net_param.CopyFrom(param_.net_param());
   }
   if (param_.has_net()) {
@@ -245,7 +245,7 @@ void Solver<Dtype>::InitTestNets() {
       net_state.MergeFrom(param_.test_state(i));
     }
     net_params[i].mutable_state()->CopyFrom(net_state);
-    //LOG(INFO) << "Creating test net (#" << i << ") specified by " << sources[i];
+    LOG(INFO) << "Creating test net (#" << i << ") specified by " << sources[i];
     if (Caffe::root_solver()) {
       test_nets_[i].reset(new Net<Dtype>(net_params[i]));
     } else {
@@ -294,14 +294,29 @@ void Solver<Dtype>::Step(int iters) {
     if (display) {
 		if (Caffe::root_solver()){
 			if (param_.test_interval()){
-				float epochf = iter_ / (float)param_.test_interval();
+				float epochf = iter_ * param_.iter_size() / (float)param_.test_interval();
 				float maxepochf = param_.max_iter() / (float)param_.test_interval();
+
+				if (param_.one_epoch_iter_size() > 0){
+					epochf = iter_ * param_.iter_size() / param_.one_epoch_iter_size();
+					maxepochf = param_.max_iter() / param_.one_epoch_iter_size();
+				}
+
 				char epochstr[100];
 				sprintf(epochstr, ", epoch: %.2f / %.2f", epochf, maxepochf);
 				LOG(INFO) << "Iteration " << iter_ << epochstr << ", loss = " << smoothed_loss_;
 			}
 			else{
-				LOG(INFO) << "Iteration " << iter_ << ", loss = " << smoothed_loss_;
+				if (param_.one_epoch_iter_size() > 0){
+					float epochf = iter_ * param_.iter_size() / param_.one_epoch_iter_size();
+					float maxepochf = param_.max_iter() / param_.one_epoch_iter_size();
+					char epochstr[100];
+					sprintf(epochstr, ", epoch: %.2f / %.2f", epochf, maxepochf);
+					LOG(INFO) << "Iteration " << iter_ << epochstr << ", loss = " << smoothed_loss_;
+				}
+				else{
+					LOG(INFO) << "Iteration " << iter_ << ", loss = " << smoothed_loss_;
+				}
 			}
 		}
       //LOG_IF(INFO, Caffe::root_solver()) << "Iteration " << iter_
@@ -414,18 +429,32 @@ void Solver<Dtype>::Solve(const char* resume_file) {
     int average_loss = this->param_.average_loss();
     Dtype loss;
     net_->Forward(&loss);
-	 
     UpdateSmoothedLoss(loss, start_iter, average_loss);
-	 
+	
 	if (param_.test_interval()){
-		float epochf = iter_ / (float)param_.test_interval();
+		float epochf = iter_ * param_.iter_size() / (float)param_.test_interval();
 		float maxepochf = param_.max_iter() / (float)param_.test_interval();
+
+		if (param_.one_epoch_iter_size() > 0){
+			epochf = iter_ * param_.iter_size() / param_.one_epoch_iter_size();
+			maxepochf = param_.max_iter() / param_.one_epoch_iter_size();
+		}
+
 		char epochstr[100]; 
 		sprintf(epochstr, ", epoch: %.2f / %.2f", epochf, maxepochf);
 		LOG(INFO) << "Iteration " << iter_ << epochstr << ", loss = " << smoothed_loss_;
 	}
 	else{
-		LOG(INFO) << "Iteration " << iter_ << ", loss = " << smoothed_loss_;
+		if (param_.one_epoch_iter_size() > 0){
+			float epochf = iter_ * param_.iter_size() / param_.one_epoch_iter_size();
+			float maxepochf = param_.max_iter() / param_.one_epoch_iter_size();
+			char epochstr[100];
+			sprintf(epochstr, ", epoch: %.2f / %.2f", epochf, maxepochf);
+			LOG(INFO) << "Iteration " << iter_ << epochstr << ", loss = " << smoothed_loss_;
+		}
+		else{
+			LOG(INFO) << "Iteration " << iter_ << ", loss = " << smoothed_loss_;
+		}
 	}
   }
   if (param_.test_interval() && iter_ % param_.test_interval() == 0) {
@@ -685,8 +714,10 @@ void Solver<Dtype>::Snapshot(const char* filepath, bool save_solver_state) {
     LOG(FATAL) << "Unsupported snapshot format.";
   }
 
-  if (save_solver_state)
-	SnapshotSolverState(model_filename);
+  if (save_solver_state){
+	  LOG(INFO) << "ignore snapshot solver state: " << model_filename;
+	  //SnapshotSolverState(model_filename);
+  }
 }
 
 template <typename Dtype>

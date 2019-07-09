@@ -138,6 +138,32 @@ void onOptimizationStopped(cc::Solver* solver, bool early, int iters, float smoo
 
 namespace cc{
 
+	CCScalar::CCScalar(){
+		val[0] = 0;
+		val[1] = 0;
+		val[2] = 0;
+		val[3] = 0;
+	}
+
+	CCScalar::CCScalar(double v0, double v1, double v2, double v3){
+		val[0] = v0;
+		val[1] = v1;
+		val[2] = v2;
+		val[3] = v3;
+	}
+
+	double CCScalar::operator[](int index) const{
+		return val[index];
+	}
+
+	double& CCScalar::operator[](int index){
+		return val[index];
+	}
+
+	CCScalar CCScalar::all(double value){
+		return CCScalar(value, value, value, value);
+	}
+
 	////////////////////////////////////////////////////////////////////////////////////////
 	CCAPI void CCCALL installLayer(const char* type, createLayerFunc creater, releaseLayerFunc release){
 		if (g_custom_layers.find(type) != g_custom_layers.end()){
@@ -196,6 +222,18 @@ namespace cc{
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	CCAPI void CCCALL releaseBlobData(BlobData* ptr){
 		if (ptr) delete ptr;
+	}
+
+	//返回GPU设备id号，失败返回-1
+	CCAPI int CCCALL getDevice(){
+		int device = -1;
+		cudaGetDevice(&device);
+		return device;
+	}
+
+	//当前是否为rootSolver
+	CCAPI bool CCCALL rootSolver(){
+		return caffe::Caffe::root_solver();
 	}
 
 	CCAPI std::shared_ptr<BlobData> CCCALL newBlobData(int num, int channels, int height, int width){
