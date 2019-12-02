@@ -151,9 +151,9 @@ const int* Blob<Dtype>::gpu_shape() const {
 }
 
 template <typename Dtype>
-const Dtype* Blob<Dtype>::cpu_data() const {
+const Dtype* Blob<Dtype>::cpu_data(bool need_to_cpu) const {
   CHECK(data_);
-  return (const Dtype*)data_->cpu_data();
+  return (const Dtype*)data_->cpu_data(need_to_cpu);
 }
 
 template <typename Dtype>
@@ -163,9 +163,9 @@ void Blob<Dtype>::set_cpu_data(Dtype* data) {
 }
 
 template <typename Dtype>
-const Dtype* Blob<Dtype>::gpu_data() const {
+const Dtype* Blob<Dtype>::gpu_data(bool need_to_gpu) const {
   CHECK(data_);
-  return (const Dtype*)data_->gpu_data();
+  return (const Dtype*)data_->gpu_data(need_to_gpu);
 }
 
 template <typename Dtype>
@@ -181,15 +181,15 @@ const Dtype* Blob<Dtype>::gpu_diff() const {
 }
 
 template <typename Dtype>
-Dtype* Blob<Dtype>::mutable_cpu_data() {
+Dtype* Blob<Dtype>::mutable_cpu_data(bool need_to_cpu = true) {
   CHECK(data_);
-  return static_cast<Dtype*>(data_->mutable_cpu_data());
+  return static_cast<Dtype*>(data_->mutable_cpu_data(need_to_cpu));
 }
 
 template <typename Dtype>
-Dtype* Blob<Dtype>::mutable_gpu_data() {
+Dtype* Blob<Dtype>::mutable_gpu_data(bool need_to_gpu = true) {
   CHECK(data_);
-  return static_cast<Dtype*>(data_->mutable_gpu_data());
+  return static_cast<Dtype*>(data_->mutable_gpu_data(need_to_gpu));
 }
 
 template <typename Dtype>

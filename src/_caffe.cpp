@@ -1,3 +1,6 @@
+
+#define BOOST_PYTHON_STATIC_LIB
+
 #include <Python.h>  // NOLINT(build/include_alpha)
 
 // Produce deprecation warnings (needs to come before arrayobject.h inclusion).
@@ -313,8 +316,8 @@ BOOST_PYTHON_MODULE(_caffe) {
     .def("reshape", &Net<Dtype>::Reshape)
     .def("clear_param_diffs", &Net<Dtype>::ClearParamDiffs)
     // The cast is to select a particular overload.
-    .def("copy_from", static_cast<void (Net<Dtype>::*)(const string)>(
-        &Net<Dtype>::CopyTrainedLayersFrom))
+    .def("copy_from", static_cast<bool (Net<Dtype>::*)(const string)>(
+		&Net<Dtype>::CopyTrainedLayersFromBinaryProto))
     .def("share_with", &Net<Dtype>::ShareTrainedLayersWith)
     .add_property("_blob_loss_weights", bp::make_function(
         &Net<Dtype>::blob_loss_weights, bp::return_internal_reference<>()))

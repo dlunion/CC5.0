@@ -159,7 +159,7 @@ namespace cc{
 #endif
 
 	int Blob::shape(int index) const {
-		return ptr->shape(index);
+		return ptr->LegacyShape(index);
 	}
 
 	shared_ptr<Blob> Blob::clone(bool clonediff){
@@ -187,12 +187,12 @@ namespace cc{
 		return this->_native;
 	}
 
-	const float* Blob::cpu_data() const{
-		return ptr->cpu_data();
+	const float* Blob::cpu_data(bool need_to_cpu) const{
+		return ptr->cpu_data(need_to_cpu);
 	}
 
-	const float* Blob::gpu_data() const{
-		return ptr->gpu_data();
+	const float* Blob::gpu_data(bool need_to_gpu) const{
+		return ptr->gpu_data(need_to_gpu);
 	}
 
 	int Blob::count() const {
@@ -254,12 +254,12 @@ namespace cc{
 		}
 	}
 
-	float* Blob::mutable_cpu_data(){
-		return ptr->mutable_cpu_data();
+	float* Blob::mutable_cpu_data(bool need_to_cpu){
+		return ptr->mutable_cpu_data(need_to_cpu);
 	}
 
-	float* Blob::mutable_gpu_data(){
-		return ptr->mutable_gpu_data();
+	float* Blob::mutable_gpu_data(bool need_to_gpu){
+		return ptr->mutable_gpu_data(need_to_gpu);
 	}
 
 	const float* Blob::cpu_diff() const{

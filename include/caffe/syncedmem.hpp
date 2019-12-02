@@ -53,12 +53,12 @@ class SyncedMemory {
         own_cpu_data_(false), cpu_malloc_use_cuda_(false), own_gpu_data_(false),
         gpu_device_(-1) {}
   ~SyncedMemory();
-  const void* cpu_data();
+  const void* cpu_data(bool need_to_cpu = true);
   void set_cpu_data(void* data);
-  const void* gpu_data();
+  const void* gpu_data(bool need_to_gpu = true);
   void set_gpu_data(void* data);
-  void* mutable_cpu_data();
-  void* mutable_gpu_data();
+  void* mutable_cpu_data(bool need_to_cpu = true);
+  void* mutable_gpu_data(bool need_to_gpu = true);
   enum SyncedHead { UNINITIALIZED, HEAD_AT_CPU, HEAD_AT_GPU, SYNCED };
   SyncedHead head() { return head_; }
   size_t size() { return size_; }

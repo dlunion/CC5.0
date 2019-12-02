@@ -6,7 +6,7 @@
 //#include "thrust/functional.h"
 //#include "thrust/sort.h"
 
-#include "caffe/common.hpp"
+//#include "caffe/common.hpp"
 #include "caffe/util/bbox_util.hpp"
 
 namespace caffe {

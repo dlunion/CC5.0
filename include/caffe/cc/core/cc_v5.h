@@ -10,7 +10,7 @@
 #include <memory>
 #include <functional>
 
-#ifdef WIN32
+#if defined(_WIN32)
 	#ifdef EXPORT_CC_DLL
 		#define CCAPI __declspec(dllexport)  
 	#else
@@ -30,8 +30,8 @@
 namespace cc{
 
 	//用宏指令，方便Mat作为参数的输入，同时去掉opencv依赖
-#define CVUMat(m)			(m).ptr<unsigned char>(0), (m).cols, (m).rows
-#define CVFMat(m)			(m).ptr<float>(0), (m).cols, (m).rows
+#define CVUMat(m)			(m).ptr<unsigned char>(0), (m).cols, (m).rows, (m).channels()
+#define CVFMat(m)			(m).ptr<float>(0), (m).cols, (m).rows, (m).channels()
 #define CVScalar(s)			CCScalar(s[0], s[1], s[2], s[3])
 #define CCScal(s)			Scalar(s[0], s[1], s[2], s[3])
 
@@ -44,6 +44,11 @@ namespace cc{
 		double& operator[](int index);
 
 		static CCScalar all(double value);
+	};
+
+	struct CCAPI CCData{
+		std::shared_ptr<char> data;
+		int length = 0;
 	};
 
 
@@ -98,10 +103,10 @@ namespace cc{
 		void set_cpu_data(float* data);
 
 		std::shared_ptr<Blob> clone(bool clonediff = false);
-		const float* cpu_data() const;
-		const float* gpu_data() const;
-		float* mutable_cpu_data();
-		float* mutable_gpu_data();
+		const float* cpu_data(bool need_to_cpu = true) const;
+		const float* gpu_data(bool need_to_gpu = true) const;
+		float* mutable_cpu_data(bool need_to_cpu = true);
+		float* mutable_gpu_data(bool need_to_gpu = true);
 		inline float* cpu_ptr(int n = 0, int c = 0, int h = 0, int w = 0){ return mutable_cpu_data() + offset(n, c, h, w); }
 		float* gpu_ptr(int n = 0, int c = 0, int h = 0, int w = 0){ return mutable_gpu_data() + offset(n, c, h, w); }
 		float& cpu_at(int n = 0, int c = 0, int h = 0, int w = 0){ return *(mutable_cpu_data() + offset(n, c, h, w)); }
@@ -162,6 +167,7 @@ namespace cc{
 		const char* topName(int index) const;
 		Blob* paramBlob(int index) const;
 		int getNumParamBlob() const;
+		void setupParamBlobSize(size_t size);
 		BaseLayer* getBaseLayerInstance() const;
 		void setBaseLayerInstance(BaseLayer* baselayer);
 
@@ -223,11 +229,13 @@ namespace cc{
 		size_t memory_used();
 		bool saveToCaffemodel(const char* path);
 		bool saveToPrototxt(const char* path, bool write_weights = false);
+		CCData saveCaffemodelToData();
+		CCData savePrototxtToData(bool write_weights = false);
 
 	private:
 		void* _native;
 	};
-	 
+
 
 	//
 	//    Caffe's Solver
@@ -289,6 +297,8 @@ namespace cc{
 	CCAPI std::shared_ptr<Net> CCCALL loadNetFromPrototxt(const char* net_prototxt, int phase = PhaseTest);
 	CCAPI std::shared_ptr<Net> CCCALL loadNetFromPrototxtString(const char* net_prototxt, int length = -1, int phase = PhaseTest);
 
+	CCAPI void CCCALL kaimingUniform(Net* net);
+
 	CCAPI void CCCALL setGPU(int id);
 	CCAPI bool CCCALL checkDevice(int id);
 
@@ -332,9 +342,10 @@ namespace cc{
 	typedef void(CCCALL *customLayerRelease)(CustomLayerInstance instance);
 	typedef void(OnTestClassification)(Solver* solver, float testloss, int index, const char* itemname, float itemscore);
 	typedef void(OnOptimizationStopped)(Solver* solver, bool early, int iters, float smoothed_loss);
+	typedef std::function<OnTestClassification> OnTestClassificationStdFunction;
 	
-
 	CCAPI void CCCALL registerOnTestClassificationFunction(OnTestClassification func);
+	CCAPI void CCCALL registerOnTestClassificationFunctionStdFunction(OnTestClassificationStdFunction func);
 	CCAPI void CCCALL registerOnOptimizationStopped(OnOptimizationStopped func);
 	CCAPI void CCCALL registerLayerFunction(newLayerFunction newlayerFunc);
 	CCAPI void CCCALL registerLayerForwardFunction(customLayerForward forward);
@@ -360,6 +371,22 @@ namespace cc{
 	CCAPI const char* CCCALL getCCVersionString();
 	CCAPI int CCCALL getCCVersionInt();
 
+
+	namespace math{
+
+		typedef enum CBLAS_ORDER     { CblasRowMajor = 101, CblasColMajor = 102 } CBLAS_ORDER;
+		typedef enum CBLAS_TRANSPOSE { CblasNoTrans = 111, CblasTrans = 112, CblasConjTrans = 113, CblasConjNoTrans = 114 } CBLAS_TRANSPOSE;
+
+		void caffe_cpu_gemm(const CBLAS_TRANSPOSE TransA,
+			const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+			const float alpha, const float* A, const float* B, const float beta,
+			float* C);
+
+		void caffe_gpu_gemm(const CBLAS_TRANSPOSE TransA,
+			const CBLAS_TRANSPOSE TransB, const int M, const int N, const int K,
+			const float alpha, const float* A, const float* B, const float beta,
+			float* C);
+	};
 
 	template<typename _DType>
 	class ThreadSafetyQueue{

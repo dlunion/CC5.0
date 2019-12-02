@@ -1,3 +1,9 @@
+## 提示
+* caffe训练配合TensorRT工程化，(戳这里，封装好没有的独立TensorRT)[https://github.com/dlunion/tensorRTIntegrate]
+* auto_grad.cpp是自己定义的自动微分，配合CC实现自动求导
+* cc_nb.cpp是网络构建，cc_network_build，实现类似torch的方式写网络结构
+* cc_util.cpp是通用工具类，实现各种日常生活需要的函数
+
 ## CC5.0 for Caffe
 * 基于Caffe改造的C++接口框架
 * 添加C++代码网络构建引擎

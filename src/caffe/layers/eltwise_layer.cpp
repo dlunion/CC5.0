@@ -26,12 +26,16 @@ void EltwiseLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   }
   stable_prod_grad_ = this->layer_param_.eltwise_param().stable_prod_grad();
 }
-
+ 
 template <typename Dtype>
 void EltwiseLayer<Dtype>::Reshape(const vector<Blob<Dtype>*>& bottom,
       const vector<Blob<Dtype>*>& top) {
   for (int i = 1; i < bottom.size(); ++i) {
-    CHECK(bottom[i]->shape() == bottom[0]->shape());
+	  CHECK(bottom[i]->shape() == bottom[0]->shape()) << "from layer: " << this->layer_param().name() << ", "
+		  << this->layer_param().bottom(i) << ":"
+		  << bottom[i]->shape_string() << " != " 
+		  << this->layer_param().bottom(0) << ":" 
+		  << bottom[0]->shape_string();
   }
   top[0]->ReshapeLike(*bottom[0]);
   // If max operation, we will initialize the vector index part.

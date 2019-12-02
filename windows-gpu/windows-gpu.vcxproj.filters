@@ -950,6 +950,12 @@
     <ClCompile Include="..\src\caffe\layers\deformable_conv_layer.cpp">
       <Filter>src\layers</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\caffe\cc\core\cc_math.cpp">
+      <Filter>src\cc\core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\caffe\cc\core\cc_infer.cpp">
+      <Filter>src\cc\core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCOmpile Include="..\src\caffe\util\bbox_util.cu">

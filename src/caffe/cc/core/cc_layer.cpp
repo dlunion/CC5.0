@@ -66,7 +66,8 @@ namespace cc{
 	}
 
 	void Layer::backward(const Blob** bottom, int numbottom, const bool* propagate_down, int propagates, const Blob** top, int numtop){
-		ptr->Backward(toVec(bottom, numbottom), vector<bool>(propagate_down, propagate_down + propagates), toVec(top, numtop));
+		//ptr->Backward(toVec(bottom, numbottom), vector<bool>(propagate_down, propagate_down + propagates), toVec(top, numtop));
+		ptr->Backward(toVec(top, numtop), vector<bool>(propagate_down, propagate_down + propagates), toVec(bottom, numbottom));
 	}
 
 	int Layer::getNumBottom() const{
@@ -91,7 +92,17 @@ namespace cc{
 			return 0;
 	}
 
+	void Layer::setupParamBlobSize(size_t size){
+		ptr->blobs_.resize(size);
+		for (int i = 0; i < size; ++i)
+			ptr->blobs_[i].reset(new caffe::Blob<float>());
+	}
+
 	Blob* Layer::paramBlob(int index) const{
+
+		if (index < 0 || index >= ptr->blobs_.size())
+			return nullptr;
+
 		return ptr->blobs_[index]->ccBlob();
 	}
 

@@ -256,7 +256,7 @@ static vector<ChartItem> interpolation(const vector<ChartItem>& data, int bins) 
 			meanValue += item.value;
 		}
 
-		int num = (end - begin) + 1;
+		int num = (end - begin);
 		if (num > 0) 
 			meanValue /= num;
 

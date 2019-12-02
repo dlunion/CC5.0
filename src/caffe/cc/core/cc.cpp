@@ -173,6 +173,10 @@ namespace cc{
 		g_custom_layers[type].release = release;
 	}
 
+	CCAPI void CCCALL registerOnTestClassificationFunctionStdFunction(OnTestClassificationStdFunction func){
+		g_onTestClassification = func;
+	}
+
 	CCAPI void CCCALL registerOnTestClassificationFunction(OnTestClassification func){
 		g_onTestClassification = func;
 	}

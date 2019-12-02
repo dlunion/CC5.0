@@ -172,7 +172,9 @@
     <ClCompile Include="..\src\caffe\blob.cpp" />
     <ClCompile Include="..\src\caffe\cc\core\cc_blob.cpp" />
     <ClCompile Include="..\src\caffe\cc\core\cc.cpp" />
+    <ClCompile Include="..\src\caffe\cc\core\cc_infer.cpp" />
     <ClCompile Include="..\src\caffe\cc\core\cc_layer.cpp" />
+    <ClCompile Include="..\src\caffe\cc\core\cc_math.cpp" />
     <ClCompile Include="..\src\caffe\cc\core\cc_net.cpp" />
     <ClCompile Include="..\src\caffe\cc\core\cc_solver.cpp" />
     <ClCompile Include="..\src\caffe\common.cpp" />
@@ -429,16 +431,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugDLL|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>../include;../3rd/include/protobuf;../3rd/include/;../3rd/include/openblas0.2.14.1;../include\caffe\proto;../3rd/include/opencv2.4.10;../3rd/include/opencv2.4.10/opencv;../3rd/include/opencv2.4.10/opencv2;../3rd/include/python3.6;../3rd/include/cudnn-7.5.0;../include/caffe/cc/import;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>../3rd/staticlib/boost/$(Platform)/;../3rd/staticlib/gflags/$(Platform)/;../3rd/staticlib/glog/$(Platform)/;../3rd/staticlib/protobuf/$(Platform)/;../3rd/staticlib/openblas/$(Platform)/;../3rd/staticlib/opencv2.4.10/$(Platform)/vc$(PlatformToolsetVersion)/staticlib;../3rd/staticlib/lmdb/$(Platform)/;../Build/gpu_cuda10.0/$(Configuration)/$(Platform)/;../3rd/staticlib/cudnn-7.5.0;../3rd/staticlib/python3.6/$(Platform)/;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>../include;../3rd/include/protobuf;../3rd/include/;../3rd/include/openblas0.2.14.1;../include\caffe\proto;../3rd/include/opencv2.4.10;../3rd/include/opencv2.4.10/opencv;../3rd/include/opencv2.4.10/opencv2;../3rd/include/cudnn-7.5.0;../include/caffe/cc/import;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>../3rd/staticlib/boost-1.59/$(Platform)/;../3rd/staticlib/gflags/$(Platform)/;../3rd/staticlib/glog/$(Platform)/;../3rd/staticlib/protobuf/$(Platform)/;../3rd/staticlib/openblas/$(Platform)/;../3rd/staticlib/opencv2.4.10/$(Platform)/vc$(PlatformToolsetVersion)/staticlib;../3rd/staticlib/lmdb/$(Platform)/;../Build/gpu_cuda10.0/$(Configuration)/$(Platform)/;../3rd/staticlib/cudnn-7.5.0;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <IntDir>../Build/gpu_cuda10.0/outobj/$(ProjectName)/$(Configuration)/$(Platform)/</IntDir>
     <OutDir>../Build/gpu_cuda10.0/$(Configuration)/$(Platform)/</OutDir>
     <TargetName>$(ProjectName)5.0d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDLL|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>../include;../3rd/include/protobuf;../3rd/include/;../3rd/include/openblas0.2.14.1;../include\caffe\proto;../3rd/include/opencv2.4.10;../3rd/include/opencv2.4.10/opencv;../3rd/include/opencv2.4.10/opencv2;../3rd/include/python3.6;../3rd/include/cudnn-7.5.0;../include/caffe/cc/import;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>../3rd/staticlib/boost/$(Platform)/;../3rd/staticlib/gflags/$(Platform)/;../3rd/staticlib/glog/$(Platform)/;../3rd/staticlib/protobuf/$(Platform)/;../3rd/staticlib/openblas/$(Platform)/;../3rd/staticlib/opencv2.4.10/$(Platform)/vc$(PlatformToolsetVersion)/staticlib;../3rd/staticlib/lmdb/$(Platform)/;../Build/gpu_cuda10.0/$(Configuration)/$(Platform)/;../3rd/staticlib/cudnn-7.5.0;../3rd/staticlib/python3.6/$(Platform)/;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <IncludePath>../include;../3rd/include/protobuf;../3rd/include/;../3rd/include/openblas0.2.14.1;../include\caffe\proto;../3rd/include/opencv2.4.10;../3rd/include/opencv2.4.10/opencv;../3rd/include/opencv2.4.10/opencv2;../3rd/include/cudnn-7.5.0;../include/caffe/cc/import;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <LibraryPath>../3rd/staticlib/boost-1.59/$(Platform)/;../3rd/staticlib/gflags/$(Platform)/;../3rd/staticlib/glog/$(Platform)/;../3rd/staticlib/protobuf/$(Platform)/;../3rd/staticlib/openblas/$(Platform)/;../3rd/staticlib/opencv2.4.10/$(Platform)/vc$(PlatformToolsetVersion)/staticlib;../3rd/staticlib/lmdb/$(Platform)/;../Build/gpu_cuda10.0/$(Configuration)/$(Platform)/;../3rd/staticlib/cudnn-7.5.0;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
     <IntDir>../Build/gpu_cuda10.0/outobj/$(ProjectName)/$(Configuration)/$(Platform)/</IntDir>
     <OutDir>../Build/gpu_cuda10.0/$(Configuration)/$(Platform)/</OutDir>
     <TargetName>$(ProjectName)5.0</TargetName>

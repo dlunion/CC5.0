@@ -81,8 +81,9 @@ inline void SyncedMemory::to_gpu() {
 #endif
 }
 
-const void* SyncedMemory::cpu_data() {
-  to_cpu();
+const void* SyncedMemory::cpu_data(bool need_to_cpu) {
+  if (need_to_cpu || cpu_ptr_ == nullptr)
+	to_cpu();
   return (const void*)cpu_ptr_;
 }
 
@@ -96,9 +97,10 @@ void SyncedMemory::set_cpu_data(void* data) {
   own_cpu_data_ = false;
 }
 
-const void* SyncedMemory::gpu_data() {
+const void* SyncedMemory::gpu_data(bool need_to_gpu) {
 #ifndef CPU_ONLY
-  to_gpu();
+ if (need_to_gpu || gpu_ptr_ == nullptr)
+	 to_gpu();
   return (const void*)gpu_ptr_;
 #else
   NO_GPU;
@@ -126,15 +128,15 @@ void SyncedMemory::set_gpu_data(void* data) {
 #endif
 }
 
-void* SyncedMemory::mutable_cpu_data() {
-  to_cpu();
+void* SyncedMemory::mutable_cpu_data(bool need_to_cpu) {
+  if (need_to_cpu || cpu_ptr_ == nullptr) to_cpu();
   head_ = HEAD_AT_CPU;
   return cpu_ptr_;
 }
 
-void* SyncedMemory::mutable_gpu_data() {
+void* SyncedMemory::mutable_gpu_data(bool need_to_gpu) {
 #ifndef CPU_ONLY
-  to_gpu();
+  if (need_to_gpu || gpu_ptr_ == nullptr) to_gpu();
   head_ = HEAD_AT_GPU;
   return gpu_ptr_;
 #else

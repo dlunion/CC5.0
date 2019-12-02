@@ -342,6 +342,11 @@ void Solver<Dtype>::Step(int iters) {
       }
     }
 
+    for (int i = 0; i < callbacks_.size(); ++i) {
+      callbacks_[i]->on_gradients_ready();
+    }
+    ApplyUpdate();
+
 	if (Caffe::root_solver()){
 		if (this->ccSolver_){
 			cc::TrainStepEndCallback callback = this->ccSolver_->getStepEndCallback();
@@ -351,11 +356,6 @@ void Solver<Dtype>::Step(int iters) {
 			}
 		}
 	}
-
-    for (int i = 0; i < callbacks_.size(); ++i) {
-      callbacks_[i]->on_gradients_ready();
-    }
-    ApplyUpdate();
 
     // Increment the internal iter_ counter -- its value should always indicate
     // the number of times the weights have been updated.

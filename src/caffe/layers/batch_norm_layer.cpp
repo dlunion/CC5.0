@@ -16,7 +16,7 @@ void BatchNormLayer<Dtype>::LayerSetUp(const vector<Blob<Dtype>*>& bottom,
   if (param.has_use_global_stats())
     use_global_stats_ = param.use_global_stats();
   if (param.has_use_global_stats()){
-	  LOG(INFO) << "use_global_stats is expired: default dynamic(test is True, train is False)";
+	 //LOG(INFO) << "use_global_stats is expired: default dynamic(test is True, train is False)";
   }
 
   if (bottom[0]->num_axes() == 1)
